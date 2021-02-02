@@ -1,0 +1,56 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+PKGNAME="gmic"
+TARNAME="$PKGNAME"
+VERSION="2.0.0"
+BUILD=1
+SECTION="DESKTOP"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}_${VERSION}.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/DESKTOP/${TARBALL}" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${PKGNAME}-${VERSION}"
+		cd src
+		sed -i "s/LIB = lib/LIB = lib$LIBDIRSUFFIX/" Makefile
+		sed -i "s:/share/man/:/man/:g" Makefile
+		# freshen gmic_stdlib.h to stop the Makefile downloading it
+		touch gmic_stdlib.h
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${PKGNAME}-${VERSION}_pre"
+popd 2>/dev/null||true

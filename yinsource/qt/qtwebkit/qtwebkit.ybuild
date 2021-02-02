@@ -1,0 +1,68 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="ICU-60.2 libjpeg-turbo-1.5.3 libpng-1.6.34 libwebp-0.6.0 libxslt-1.1.32 Qt5-5.8.0 Ruby-2.5.0 SQLite-3.22.0"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="qtwebkit"
+TARNAME="${PKGNAME}"
+VERSION="5.212.0"
+BUILD=1
+SECTION="QT"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+
+gettar "https://github.com/qt/qtwebkit/archive/v${VERSION}-alpha3.tar.gz" $SECTION ${TARBALL}
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}-alpha3"
+		SAVEPATH=$PATH
+		export PATH=$PWD/bin:$PATH
+
+		mkdir build||true
+		cd  build
+		qmake ../WebKit.pro
+		make $MAKEFLAGS||make|| exit 100
+		make install INSTALL_ROOT=$PKG || exit 100
+		find ${PKG}/$QT5DIR/pkgconfig -name "*.pc" -exec perl -pi -e "s, -L$PWD/?\S+,,g" {} \;
+		find ${PKG}/$QT5DIR/ -name qt_lib_bootstrap_private.pri -exec sed -i -e "s:$PWD/qtbase:/$QT5DIR/lib/:g" {} \;
+		find ${PKG}/$QT5DIR/ -name \*.prl -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+		export PATH=$SAVEPATH
+		unset SAVEPATH
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}-alpha3"
+popd 2>/dev/null||true

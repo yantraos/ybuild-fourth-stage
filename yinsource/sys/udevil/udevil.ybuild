@@ -1,0 +1,60 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="glib-2.60.6"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="udevil"
+VERSION="0.4.4"
+BUILD=${BUILD:-1}
+SECTION="SYS"
+SUFFIX="YAPS"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+gettar "http://35.154.131.43/ysarchives/9.0/SYS/" ${SECTION} ${PKGNAME}.zip
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+if [ $USESYSTEMD -eq 0 ];then
+	SYSTEMDOPTS="--disable-systemd"
+fi
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${PKGNAME}.zip" "zip"
+	pushd "udevil-master"
+		CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure --prefix=/usr $SYSTEMDOPTS --with-setfacl-prog="/bin/setfacl"
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+		mkdir -vp $PKG/etc ||true
+		cp $CWD/udevil.conf $PKG/etc/udevil
+	popd
+
+	checketc $PKG
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "udevil-master"
+popd 2>/dev/null||true

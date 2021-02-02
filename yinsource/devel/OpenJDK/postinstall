@@ -1,0 +1,51 @@
+#!/bin/bash
+
+#©keithhedger Wed 18 Feb 12:28:04 GMT 2015 kdhedger68713@gmail.com
+
+JDKVERSION="jdk-12.0.2+10"
+
+rm -f /opt/jdk
+(cd /opt;ln -sv ${JDKVERSION} jdk)
+
+mkdir -vp /usr/share/applications||true
+cat > /usr/share/applications/openjdk-9-java.desktop << "EOF"
+[Desktop Entry]
+Name=OpenJDK Java 9 Runtime
+Comment=OpenJDK Java 9 Runtime
+Exec=/opt/jdk/bin/java -jar
+Terminal=false
+Type=Application
+Icon=java9
+MimeType=application/x-java-archive;application/java-archive;application/x-jar;
+NoDisplay=true
+EOF
+
+cat > /usr/share/applications/openjdk-9-policytool.desktop << "EOF"
+[Desktop Entry]
+Name=OpenJDK Java 9 Policy Tool
+Name[pt_BR]=OpenJDK Java 9 - Ferramenta de Política
+Comment=OpenJDK Java 9 Policy Tool
+Comment[pt_BR]=OpenJDK Java 9 - Ferramenta de Política
+Exec=/opt/jdk/bin/policytool
+Terminal=false
+Type=Application
+Icon=java9
+Categories=Settings;
+EOF
+
+cat > /usr/share/applications/openjdk-9-jconsole.desktop << "EOF"
+[Desktop Entry]
+Name=OpenJDK Java 9 Console
+Comment=OpenJDK Java 9 Console
+Keywords=java;console;monotoring
+Exec=/opt/jdk/bin/jconsole
+Terminal=false
+Type=Application
+Icon=java9
+Categories=Application;System;
+EOF
+
+/usr/sbin/make-ca -g
+ln -sfv /etc/pki/tls/java/cacerts /opt/jdk/lib/security/cacerts
+
+exit 0

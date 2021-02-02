@@ -1,0 +1,16 @@
+#!/bin/bash -e
+
+#©ACSESTECH  raj.atmakuri@acsestech.com
+
+. /usr/share/yinstal/yapi
+
+mkdir -vp /etc/profile.d/||true
+
+cat > /etc/profile.d/ant.sh << EOF
+# Begin /etc/profile.d/ant.sh
+
+pathappend /opt/ant/bin
+export ANT_HOME=/opt/ant
+
+# End /etc/profile.d/ant.sh
+EOF

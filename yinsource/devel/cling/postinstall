@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#©ACSESTECH    raj.atmakuri@acsestech.com
+
+. /usr/share/yinstal/yapi
+
+ln -sv "/opt/cling/bin/cling" /usr/bin ||true

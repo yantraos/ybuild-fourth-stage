@@ -1,0 +1,74 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="NSS-3.45 PulseAudio-12.2 qt5-5.13.0 x264-2245 libwebp-1.0.3 ffmpeg-4.2 Opus-1.3.1"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="qtwebengine"
+TARNAME="qtwebengine-everywhere-src"
+VERSION="5.14.1"
+BUILD=1
+SECTION="QT"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.xz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "https://download.qt.io/archive/qt/${VERSION%.?*}/${VERSION}/submodules/${TARBALL}" $SECTION
+
+#possible fix for SOME setups use with discrection
+#gettar "http://www.linuxfromscratch.org/patches/blfs/$yversion/${PKGNAME}-${VERSION}-background_rendering_fix-1.patch" $SECTION
+
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		find -type f -name "*.pr[io]" | xargs sed -i -e 's|INCLUDEPATH += |&$$QTWEBENGINE_ROOT/include |'
+#possible fix for SOME setups use with discrection
+#		patch -Np1 -i ${SOURCEARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-background_rendering_fix-1.patch
+		sed -e '/link_pulseaudio/s/false/true/' -i src/3rdparty/chromium/media/media_options.gni
+		sed -i 's/NINJAJOBS/NINJA_JOBS/' src/core/gn_run.pro
+		if [ -e ${QT5DIR}/libQt5WebEngineCore.so ];then
+			mv -v ${QT5DIR}/libQt5WebEngineCore.so{,.old}
+		fi
+		mkdir build||true
+		cd  build
+		export NINJA_JOBS="-j3"
+		qmake .. --  -proprietary-codecs  -system-ffmpeg -webp -spellchecker -webengine-icu
+		make $MAKEFLAGS||make|| exit 100
+		make install INSTALL_ROOT=$PKG || exit 100
+		find ${PKG}${QT5PREFIX}/ -name \*.prl -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+		mkdir -vp ${PKG}/${QT5PREFIX}/share/qt5/qtwebengine_dictionaries ${PKG}/${QT5PREFIX}/share/qt5/resources||true
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

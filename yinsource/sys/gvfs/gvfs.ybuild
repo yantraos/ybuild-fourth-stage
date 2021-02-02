@@ -1,0 +1,64 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="dbus-1.12.16 GLib-2.60.6 Intltool-0.51.0 libusb-1.0.22 libsecret-0.18.8 libsoup-2.66.2"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="gvfs"
+TARNAME="$PKGNAME"
+VERSION="1.40.2"
+BUILD=${BUILD:-1}
+SECTION="SYS"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.xz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "gettar "http://35.154.131.43/ysarchives/9.0/SYS/${TARBALL}" $SECTION
+
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+if [ $USESYSTEMD -eq 0 ];then
+	SYSTEMDOPTS="-Dsystemduserunitdir=no"
+fi
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		mkdir build||true
+		cd build
+		CFLAGS="$yflags" CXXFLAGS="$yflags" meson --prefix=/usr -Dfuse=false -Dgphoto2=false -Dafc=false -Dbluray=false -Dnfs=false -Dmtp=false -Dsmb=false -Dtmpfilesdir=no -Ddnssd=false -Dgoa=false -Dgoogle=false $SYSTEMDOPTS -Dgcrypt=false -Dgcr=false -Dudisks2=false -Dlogind=false  -Dcdda=false -Dsftp=false ..
+		ninja $MAKEFLAGS||ninja -j1||exit 100
+		DESTDIR=$PKG ninja install
+	popd
+
+	checketc $PKG
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

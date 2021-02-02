@@ -1,0 +1,397 @@
+#!/bin/bash -e
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+. /yinscripts/PkgVersions
+
+sed -i -e "s/\$BINUTILS_VERS/$BINUTILS_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/binutils/binutils.ybuild'
+sed -i -e "s/\$BINUTILS_VERS/$BINUTILS_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$BINUTILS_VERS/$BINUTILS_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$BINUTILS_VERS/$BINUTILS_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$GCC_VERS/$GCC_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/gcc/gcc.ybuild'
+sed -i -e "s/\$GCC_VERS/$GCC_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$GCC_VERS/$GCC_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$GCC_VERS/$GCC_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$GMP_VERS/$GMP_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/gmp/gmp.ybuild'
+sed -i -e "s/\$GMP_VERS/$GMP_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$GMP_VERS/$GMP_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$GMP_VERS/$GMP_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$MPC_VERS/$MPC_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/mpc/mpc.ybuild'
+sed -i -e "s/\$MPC_VERS/$MPC_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$MPC_VERS/$MPC_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$MPC_VERS/$MPC_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$MPFR_VERS/$MPFR_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/mpfr/mpfr.ybuild'
+sed -i -e "s/\$MPFR_VERS/$MPFR_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$MPFR_VERS/$MPFR_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$MPFR_VERS/$MPFR_VERS/g" '/Lyinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$LINUX_VERS/$LINUX_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/linuxheaders/linuxheaders.ybuild'
+sed -i -e "s/\$LINUX_VERS/$LINUX_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$LINUX_VERS/$LINUX_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$LINUX_VERS/$LINUX_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$GLIBC_VERS/$GLIBC_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/glibc/glibc.ybuild'
+sed -i -e "s/\$TZDATA_VERS/$TZDATA_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/glibc/postinstall'
+sed -i -e "s/\$GLIBC_VERS/$GLIBC_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$GLIBC_VERS/$GLIBC_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$GLIBC_VERS/$GLIBC_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$M4_VERS/$M4_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/m4/m4.ybuild'
+sed -i -e "s/\$M4_VERS/$M4_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$M4_VERS/$M4_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$M4_VERS/$M4_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$BC_VERS/$BC_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/bc/bc.ybuild'
+sed -i -e "s/\$BC_VERS/$BC_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$BC_VERS/$BC_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$BC_VERS/$BC_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$CHECK_VERS/$CHECK_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/check/check.ybuild'
+sed -i -e "s/\$CHECK_VERS/$CHECK_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$CHECK_VERS/$CHECK_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$CHECK_VERS/$CHECK_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$NCURSES_VERS/$NCURSES_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/ncurses/ncurses.ybuild'
+sed -i -e "s/\$NCURSES_VERS/$NCURSES_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$NCURSES_VERS/$NCURSES_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$NCURSES_VERS/$NCURSES_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$NCURSES_VERS/$NCURSES_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/ncurses/ncurses-static.ybuild'
+sed -i -e "s/\$NCURSES_VERS/$NCURSES_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$NCURSES_VERS/$NCURSES_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$NCURSES_VERS/$NCURSES_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$BASH_VERS/$BASH_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/bash/bash.ybuild'
+sed -i -e "s/\$BASH_VERS/$BASH_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$BASH_VERS/$BASH_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$BASH_VERS/$BASH_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$BISON_VERS/$BISON_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/bison/bison.ybuild'
+sed -i -e "s/\$BISON_VERS/$BISON_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$BISON_VERS/$BISON_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$BISON_VERS/$BISON_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$BZIP2_VERS/$BZIP2_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/bzip2/bzip2.ybuild'
+sed -i -e "s/\$BZIP2_VERS/$BZIP2_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$BZIP2_VERS/$BZIP2_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$BZIP2_VERS/$BZIP2_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$COREUTILS_VERS/$COREUTILS_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/coreutils/coreutils.ybuild'
+sed -i -e "s/\$COREUTILS_VERS/$COREUTILS_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$COREUTILS_VERS/$COREUTILS_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$COREUTILS_VERS/$COREUTILS_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$DIFFUTILS_VERS/$DIFFUTILS_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/diffutils/diffutils.ybuild'
+sed -i -e "s/\$DIFFUTILS_VERS/$DIFFUTILS_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$DIFFUTILS_VERS/$DIFFUTILS_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$DIFFUTILS_VERS/$DIFFUTILS_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$FILE_VERS/$FILE_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/file/file.ybuild'
+sed -i -e "s/\$FILE_VERS/$FILE_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$FILE_VERS/$FILE_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$FILE_VERS/$FILE_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$FINDUTILS_VERS/$FINDUTILS_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/findutils/findutils.ybuild'
+sed -i -e "s/\$FINDUTILS_VERS/$FINDUTILS_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$FINDUTILS_VERS/$FINDUTILS_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$FINDUTILS_VERS/$FINDUTILS_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$READLINE_VERS/$READLINE_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/readline/readline.ybuild'
+sed -i -e "s/\$READLINE_VERS/$READLINE_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$READLINE_VERS/$READLINE_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$READLINE_VERS/$READLINE_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$GAWK_VERS/$GAWK_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/gawk/gawk.ybuild'
+sed -i -e "s/\$GAWK_VERS/$GAWK_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$GAWK_VERS/$GAWK_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$GAWK_VERS/$GAWK_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$GETTEXT_VERS/$GETTEXT_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/gettext/gettext.ybuild'
+sed -i -e "s/\$GETTEXT_VERS/$GETTEXT_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$GETTEXT_VERS/$GETTEXT_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$GETTEXT_VERS/$GETTEXT_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$GREP_VERS/$GREP_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/grep/grep.ybuild'
+sed -i -e "s/\$GREP_VERS/$GREP_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$GREP_VERS/$GREP_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$GREP_VERS/$GREP_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$GZIP_VERS/$GZIP_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/gzip/gzip.ybuild'
+sed -i -e "s/\$GZIP_VERS/$GZIP_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$GZIP_VERS/$GZIP_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$GZIP_VERS/$GZIP_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$MAKE_VERS/$MAKE_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/make/make.ybuild'
+sed -i -e "s/\$MAKE_VERS/$MAKE_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$MAKE_VERS/$MAKE_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$MAKE_VERS/$MAKE_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$PATCH_VERS/$PATCH_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/patch/patch.ybuild'
+sed -i -e "s/\$PATCH_VERS/$PATCH_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$PATCH_VERS/$PATCH_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$PATCH_VERS/$PATCH_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$PERL_VERS/$PERL_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/perl/perl.ybuild'
+sed -i -e "s/\$PERL_VERS/$PERL_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$PERL_VERS/$PERL_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$PERL_VERS/$PERL_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$PYTHON_VERS/$PYTHON_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/Python3/Python3.ybuild'
+sed -i -e "s/\$PYTHON_VERS/$PYTHON_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$PYTHON_VERS/$PYTHON_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$PYTHON_VERS/$PYTHON_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$SED_VERS/$SED_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/sed/sed.ybuild'
+sed -i -e "s/\$SED_VERS/$SED_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$SED_VERS/$SED_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$SED_VERS/$SED_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$TAR_VERS/$TAR_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/tar/tar.ybuild'
+sed -i -e "s/\$TAR_VERS/$TAR_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$TAR_VERS/$TAR_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$TAR_VERS/$TAR_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$TEXINFO_VERS/$TEXINFO_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/texinfo/texinfo.ybuild'
+sed -i -e "s/\$TEXINFO_VERS/$TEXINFO_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$TEXINFO_VERS/$TEXINFO_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$TEXINFO_VERS/$TEXINFO_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$XZ_VERS/$XZ_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/xz/xz.ybuild'
+sed -i -e "s/\$XZ_VERS/$XZ_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$XZ_VERS/$XZ_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$XZ_VERS/$XZ_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$MANPAGES_VERS/$MANPAGES_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/man-pages/man-pages.ybuild'
+sed -i -e "s/\$MANPAGES_VERS/$MANPAGES_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$MANPAGES_VERS/$MANPAGES_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$MANPAGES_VERS/$MANPAGES_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$ZLIB_VERS/$ZLIB_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/zlib/zlib.ybuild'
+sed -i -e "s/\$ZLIB_VERS/$ZLIB_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$ZLIB_VERS/$ZLIB_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$ZLIB_VERS/$ZLIB_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$SHADOW_VERS/$SHADOW_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/shadow/shadow.ybuild'
+sed -i -e "s/\$SHADOW_VERS/$SHADOW_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$SHADOW_VERS/$SHADOW_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$SHADOW_VERS/$SHADOW_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$PKGCONFIG_VERS/$PKGCONFIG_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/pkg-config/pkg-config.ybuild'
+sed -i -e "s/\$PKGCONFIG_VERS/$PKGCONFIG_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$PKGCONFIG_VERS/$PKGCONFIG_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$PKGCONFIG_VERS/$PKGCONFIG_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$ATTR_VERS/$ATTR_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/attr/attr.ybuild'
+sed -i -e "s/\$ATTR_VERS/$ATTR_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$ATTR_VERS/$ATTR_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$ATTR_VERS/$ATTR_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$ACL_VERS/$ACL_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/acl/acl.ybuild'
+sed -i -e "s/\$ACL_VERS/$ACL_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$ACL_VERS/$ACL_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$ACL_VERS/$ACL_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$LIBCAP_VERS/$LIBCAP_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/libcap/libcap.ybuild'
+sed -i -e "s/\$LIBCAP_VERS/$LIBCAP_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$LIBCAP_VERS/$LIBCAP_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$LIBCAP_VERS/$LIBCAP_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$PSMISC_VERS/$PSMISC_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/psmisc/psmisc.ybuild'
+sed -i -e "s/\$PSMISC_VERS/$PSMISC_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$PSMISC_VERS/$PSMISC_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$PSMISC_VERS/$PSMISC_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$IANAETC_VERS/$IANAETC_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/iana-etc/iana-etc.ybuild'
+sed -i -e "s/\$IANAETC_VERS/$IANAETC_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$IANAETC_VERS/$IANAETC_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$IANAETC_VERS/$IANAETC_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$FLEX_VERS/$FLEX_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/flex/flex.ybuild'
+sed -i -e "s/\$FLEX_VERS/$FLEX_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$FLEX_VERS/$FLEX_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$FLEX_VERS/$FLEX_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$LIBTOOL_VERS/$LIBTOOL_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/libtool/libtool.ybuild'
+sed -i -e "s/\$LIBTOOL_VERS/$LIBTOOL_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$LIBTOOL_VERS/$LIBTOOL_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$LIBTOOL_VERS/$LIBTOOL_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$GDBM_VERS/$GDBM_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/gdbm/gdbm.ybuild'
+sed -i -e "s/\$GDBM_VERS/$GDBM_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$GDBM_VERS/$GDBM_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$GDBM_VERS/$GDBM_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$GPERF_VERS/$GPERF_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/gperf/gperf.ybuild'
+sed -i -e "s/\$GPERF_VERS/$GPERF_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$GPERF_VERS/$GPERF_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$GPERF_VERS/$GPERF_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$EXPAT_VERS/$EXPAT_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/expat/expat.ybuild'
+sed -i -e "s/\$EXPAT_VERS/$EXPAT_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$EXPAT_VERS/$EXPAT_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$EXPAT_VERS/$EXPAT_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$INETUTILS_VERS/$INETUTILS_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/inetutils/inetutils.ybuild'
+sed -i -e "s/\$INETUTILS_VERS/$INETUTILS_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$INETUTILS_VERS/$INETUTILS_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$INETUTILS_VERS/$INETUTILS_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$XMLPARSER_VERS/$XMLPARSER_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/xml-parser/xml-parser.ybuild'
+sed -i -e "s/\$XMLPARSER_VERS/$XMLPARSER_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$XMLPARSER_VERS/$XMLPARSER_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$XMLPARSER_VERS/$XMLPARSER_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$INTLTOOL_VERS/$INTLTOOL_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/intltool/intltool.ybuild'
+sed -i -e "s/\$INTLTOOL_VERS/$INTLTOOL_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$INTLTOOL_VERS/$INTLTOOL_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$INTLTOOL_VERS/$INTLTOOL_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$AUTOCONF_VERS/$AUTOCONF_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/autoconf/autoconf.ybuild'
+sed -i -e "s/\$AUTOCONF_VERS/$AUTOCONF_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$AUTOCONF_VERS/$AUTOCONF_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$AUTOCONF_VERS/$AUTOCONF_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$AUTOMAKE_VERS/$AUTOMAKE_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/automake/automake.ybuild'
+sed -i -e "s/\$AUTOMAKE_VERS/$AUTOMAKE_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$AUTOMAKE_VERS/$AUTOMAKE_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$AUTOMAKE_VERS/$AUTOMAKE_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$KMOD_VERS/$KMOD_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/kmod/kmod.ybuild'
+sed -i -e "s/\$KMOD_VERS/$KMOD_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$KMOD_VERS/$KMOD_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$KMOD_VERS/$KMOD_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$ELFUTILS_VERS/$ELFUTILS_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/libelf/libelf.ybuild'
+sed -i -e "s/\$ELFUTILS_VERS/$ELFUTILS_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$ELFUTILS_VERS/$ELFUTILS_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$ELFUTILS_VERS/$ELFUTILS_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$LIBFFI_VERS/$LIBFFI_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/libffi/libffi.ybuild'
+sed -i -e "s/\$LIBFFI_VERS/$LIBFFI_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$LIBFFI_VERS/$LIBFFI_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$LIBFFI_VERS/$LIBFFI_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$OPENSSL_VERS/$OPENSSL_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/openssl/openssl.ybuild'
+sed -i -e "s/\$OPENSSL_VERS/$OPENSSL_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$OPENSSL_VERS/$OPENSSL_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$OPENSSL_VERS/$OPENSSL_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$NINJA_VERS/$NINJA_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/ninja/ninja.ybuild'
+sed -i -e "s/\$NINJA_VERS/$NINJA_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$NINJA_VERS/$NINJA_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$NINJA_VERS/$NINJA_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$MESON_VERS/$MESON_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/meson/meson.ybuild'
+sed -i -e "s/\$MESON_VERS/$MESON_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$MESON_VERS/$MESON_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$MESON_VERS/$MESON_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$GROFF_VERS/$GROFF_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/groff/groff.ybuild'
+sed -i -e "s/\$GROFF_VERS/$GROFF_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$GROFF_VERS/$GROFF_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$GROFF_VERS/$GROFF_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$GRUB_VERS/$GRUB_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/grub/grub.ybuild'
+sed -i -e "s/\$GRUB_VERS/$GRUB_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$GRUB_VERS/$GRUB_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$GRUB_VERS/$GRUB_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$LESS_VERS/$LESS_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/less/less.ybuild'
+sed -i -e "s/\$LESS_VERS/$LESS_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$LESS_VERS/$LESS_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$LESS_VERS/$LESS_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$IPROUTE2_VERS/$IPROUTE2_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/iproute2/iproute2.ybuild'
+sed -i -e "s/\$IPROUTE2_VERS/$IPROUTE2_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$IPROUTE2_VERS/$IPROUTE2_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$IPROUTE2_VERS/$IPROUTE2_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$KBD_VERS/$KBD_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/kbd/kbd.ybuild'
+sed -i -e "s/\$KBD_VERS/$KBD_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$KBD_VERS/$KBD_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$KBD_VERS/$KBD_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$LIBPIPELINE_VERS/$LIBPIPELINE_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/libpipeline/libpipeline.ybuild'
+sed -i -e "s/\$LIBPIPELINE_VERS/$LIBPIPELINE_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$LIBPIPELINE_VERS/$LIBPIPELINE_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$LIBPIPELINE_VERS/$LIBPIPELINE_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$MANDB_VERS/$MANDB_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/man-db/man-db.ybuild'
+sed -i -e "s/\$MANDB_VERS/$MANDB_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$MANDB_VERS/$MANDB_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$MANDB_VERS/$MANDB_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$VIM_VERS/$VIM_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/vim/vim.ybuild'
+sed -i -e "s/\$VIM_VERS/$VIM_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$VIM_VERS/$VIM_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$VIM_VERS/$VIM_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$PROCPSNG_VERS/$PROCPSNG_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/procps-ng/procps-ng.ybuild'
+sed -i -e "s/\$PROCPSNG_VERS/$PROCPSNG_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$PROCPSNG_VERS/$PROCPSNG_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$PROCPSNG_VERS/$PROCPSNG_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$UTILLINUX_VERS/$UTILLINUX_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/util-linux/util-linux.ybuild'
+sed -i -e "s/\$UTILLINUX_VERS/$UTILLINUX_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$UTILLINUX_VERS/$UTILLINUX_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$UTILLINUX_VERS/$UTILLINUX_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$E2FSPROGS_VERS/$E2FSPROGS_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/e2fsprogs/e2fsprogs.ybuild'
+sed -i -e "s/\$E2FSPROGS_VERS/$E2FSPROGS_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$E2FSPROGS_VERS/$E2FSPROGS_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$E2FSPROGS_VERS/$E2FSPROGS_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$SYSKLOGD_VERS/$SYSKLOGD_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/sysklogd/sysklogd.ybuild'
+sed -i -e "s/\$SYSKLOGD_VERS/$SYSKLOGD_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$SYSKLOGD_VERS/$SYSKLOGD_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$SYSKLOGD_VERS/$SYSKLOGD_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$SYSVINIT_VERS/$SYSVINIT_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/sysvinit/sysvinit.ybuild'
+sed -i -e "s/\$SYSVINIT_VERS/$SYSVINIT_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$SYSVINIT_VERS/$SYSVINIT_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$SYSVINIT_VERS/$SYSVINIT_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$BOOTSCRIPTS_VERS/$BOOTSCRIPTS_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/ybootscripts/ybootscripts.ybuild'
+sed -i -e "s/\$BOOTSCRIPTS_VERS/$BOOTSCRIPTS_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$BOOTSCRIPTS_VERS/$BOOTSCRIPTS_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$BOOTSCRIPTS_VERS/$BOOTSCRIPTS_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$EUDEV_VERS/$EUDEV_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/eudev/eudev.ybuild'
+sed -i -e "s/\$UDEV_VERS/$UDEV_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/eudev/eudev.ybuild'
+sed -i -e "s/\$EUDEV_VERS/$EUDEV_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$EUDEV_VERS/$EUDEV_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$EUDEV_VERS/$EUDEV_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+#sed -i -e "s/\$WGET_VERS/$WGET_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/net/wget/wget.ybuild'
+sed -i -e "s/\$WGET_VERS/$WGET_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$WGET_VERS/$WGET_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$WGET_VERS/$WGET_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+#sed -i -e "s/\$UNZIP_VERS/$UNZIP_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/sys/unzip/unzip.ybuild'
+sed -i -e "s/\$UNZIP_VERS/$UNZIP_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$UNZIP_VERS/$UNZIP_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$UNZIP_VERS/$UNZIP_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+sed -i -e "s/\$initforyantra_vers/$initforyantra_vers/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/system/Init-For-yantra/Init-For-yantra.ybuild'
+sed -i -e "s/\$initforyantra_vers/$initforyantra_vers/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$initforyantra_vers/$initforyantra_vers/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$initforyantra_vers/$initforyantra_vers/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+#sed -i -e "s/\$GPM_VERS/$GPM_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/sys/gpm/gpm.ybuild'
+sed -i -e "s/\$GPM_VERS/$GPM_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$GPM_VERS/$GPM_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$GPM_VERS/$GPM_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+#sed -i -e "s/\$LINKS_VERS/$LINKS_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/xorg/links/links.ybuild'
+sed -i -e "s/\$LINKS_VERS/$LINKS_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+sed -i -e "s/\$LINKS_VERS/$LINKS_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+sed -i -e "s/\$LINKS_VERS/$LINKS_VERS/g" '/yinsource/system/system-meta/system-pi-sysvinit-meta.ybuild'
+
+#sed -i -e "s/\$DBUS_VERS/$DBUS_VERS/g" -e '/^\. \.\.\/PkgVersions$/d' '/yinsource/sys/dbus/dbus.ybuild'
+#sed -i -e "s/\$DBUS_VERS/$DBUS_VERS/g" '/yinsource/system/system-meta/system-yinit-meta.ybuild'
+#sed -i -e "s/\$DBUS_VERS/$DBUS_VERS/g" '/yinsource/system/system-meta/system-sysvinit-meta.ybuild'
+

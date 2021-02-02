@@ -1,0 +1,116 @@
+#!/bin/bash -e
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+#Build xorg:
+cd /yinsource/xorg/xorg-meta/
+./xorg-meta.ybuild install
+
+#Install documentation stuff
+#Also installs python via dependency
+#Loads of apps need these for building documentation so might as well install now.
+cd /yinsource/devel/gtk-doc
+./gtk-doc.ybuild install
+
+cd /yinsource/devel/doxygen
+./doxygen.ybuild install
+
+#Install cups and gtk.
+#Gtk2 has a 'soft' dependency on cups so best to buils cups first.
+cd /yinsource/print/cups
+./cups.ybuild install
+
+cd /yinsource/gtk/gtk
+./gtk.ybuild install
+
+#rest of printing stuff
+cd /yinsource/print/printing-meta
+./printing-meta.ybuild install
+
+#multi media
+cd /yinsource/mm/mm-meta
+./mm-meta.ybuild install
+
+#Development stuff
+cd /yinsource/devel/development-meta
+./development-meta.ybuild install
+
+#The big one! build a complete desktop
+#this meta packagage includes other meta packages and takes a Long time to build!
+#this is for an xfce4 desktop.
+cd /yinsource/desktop/desktop-meta
+./desktop-meta.ybuild  install
+#Or for an ydesktop
+cd /yinsource/ydesktop/ydesktop-meta
+./ydesktop-meta.ybuild install
+
+#Extra odd stuff
+#Chromium
+cd /yinsource/desktop/chromium
+./chromium.ybuild install
+
+#Cairo-dock-plugins pulls in cairo-dock as a dependency
+cd /yinsource/desktop/cairo-dock-plugins
+./cairo-dock-plugins.ybuild install
+
+#Qemu builds both static and dynamically linked versions
+cd /yinsource/hware/qemu
+./qemu.ybuild install
+
+#Seamonkey for web dev
+cd /yinsource/net/seamonkey
+./seamonkey.ybuild install
+
+#Icedtea-web
+cd /yinsource/net/icedtea-web
+./icedtea-web.ybuild install
+#For pulse audio
+cd /yinsource/net/icedtea-sound
+./icedtea-sound.ybuild install
+
+#Samba
+cd /yinsource/net/samba
+./samba.ybuild install
+
+#Fuse and stuff
+cd /yinsource/net/sshfs
+./sshfs.ybuild install
+
+cd /yinsource/net/davfs2
+./davfs2.ybuild install
+
+cd /yinsource/net/curlftpfs
+./curlftpfs.ybuild install
+
+#Qt5 stuff
+#cd /yinsource/qt/lxqt-meta
+#./lxqt-meta.ybuild install
+
+#TODO
+cd /yinsource/qt/qt-creator
+./qt-creator.ybuild install
+
+cd /yinsource/admin/mariadb
+./mariadb.ybuild install
+
+#Busybox init
+#cd /yinsource/sys/busybox
+#./busybox.ybuild install
+#
+#cd /yinsource/sys/bootfiles
+#./bootfiles.ybuild install
+
+#Odd stuff
+cd /yinsource/xorg/xbindkeys
+./xbindkeys.ybuild install
+
+cd /yinsource/net/libcddb
+./libcddb.ybuild install
+
+cd /yinsource/desktop/epdfview
+./epdfview.ybuild install
+
+cd /yinsource/desktop/conky
+./conky.ybuild install
+
+

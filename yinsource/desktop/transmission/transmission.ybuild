@@ -1,0 +1,71 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="curl-7.65.3 Intltool-0.51.0 libevent-2.1.11 OpenSSL-1.1.1"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="transmission"
+TARNAME="$PKGNAME"
+VERSION="2.94"
+BUILD=${BUILD:-1}
+SECTION="DESKTOP"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.xz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/DESKTOP/${TARBALL}" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+BUILDGUI=${BUILDGUI:-1}
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure --prefix=/usr --disable-nls --without-gtk --enable-cli
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+
+		if [ $BUILDGUI -eq 1 ];then
+			pushd qt
+				qmake qtr.pro
+				make $MAKEFLAGS||make|| exit 100
+			popd
+			make INSTALL_ROOT=$PKG/usr -C qt install
+		fi
+	
+		mkdir -vp $PKG/usr/share/applications $PKG/usr/share/pixmaps||true
+		install -m644 qt/transmission-qt.desktop $PKG/usr/share/applications/transmission-qt.desktop
+		install -m644 qt/icons/transmission.png $PKG/usr/share/pixmaps/transmission-qt.png
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

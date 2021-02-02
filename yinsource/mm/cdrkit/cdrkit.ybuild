@@ -1,0 +1,82 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="CMake-3.10.2"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="cdrkit"
+TARNAME="$PKGNAME"
+VERSION="1.1.11"
+#MINORREVISION=cdrkit
+BUILD=${BUILD:-1}
+SECTION="MM"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/MM/${TARBALL}" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	(cd /usr/lib${LIBDIRSUFFIX}; ln -sv libnettle.so libnettle.so.4||true)
+	pushd "${TARNAME}-${VERSION}"
+		cmake -DCMAKE_INSTALL_PREFIX=/usr
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+		pushd $PKG/usr/bin
+			#Add cdrecord symlink to wodim (compatibility)
+			ln -fs wodim cdrecord
+			#The author of cdda2wav requested their program be renamed, so...
+			#Add cdda2wav symlink to icedax (compatibility)
+			ln -fs icedax cdda2wav
+			#More renaming (due to legal concerns)
+			#Add mkisofs symlink to genisoimage (compatibility)
+			ln -fs genisoimage mkisofs
+		popd
+		mv $PKG/usr/share/man $PKG/usr/man/
+		pushd 3rd-party/zisofs_tools
+			CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure --prefix=/usr
+			make
+		popd
+		rm -fR $PKG/usr/share
+		install -m 0755 icedax/cdda2mp3 $PKG/usr/bin/cdda2mp3
+		install -m 0755 3rd-party/zisofs_tools/mkzftree $PKG/usr/bin/mkzftree
+		install -m 0755 3rd-party/geteltorito/geteltorito.pl $PKG/usr/bin/geteltorito
+		install -m 0644 3rd-party/zisofs_tools/mkzftree.1 $PKG/usr/man/man1/mkzftree.1
+		install -m 0644 3rd-party/geteltorito.1 $PKG/usr/man/man1/geteltorito.1
+		install -m 0644 -D wodim/wodim.dfl $PKG/etc/wodim.conf
+		install -m 0644 netscsid/netscsid.dfl $PKG/etc/netscsid.conf
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null

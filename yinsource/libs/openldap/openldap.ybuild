@@ -1,0 +1,74 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="Cyrus-SASL-2.1.27 openssl-1.1.1"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="openldap"
+TARNAME="$PKGNAME"
+VERSION="2.4.48"
+BUILD=1
+SECTION="LIBS"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tgz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/LIBS/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/9.0/LIBS/${PKGNAME}-${VERSION}-consolidated-1.patch" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+UIDGIDPAIR=$(findnextpair "system")
+groupadd -g $UIDGIDPAIR ldap||true
+useradd -c "OpenLDAP Daemon Owner" -d /var/lib/openldap -g ldap -s /bin/false -u $UIDGIDPAIR ldap||true
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		patch -Np1 -i ${SOURCEARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-consolidated-1.patch
+		autoconf
+
+		CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure --prefix=/usr --enable-dynamic --with-tls=openssl --with-cyrus-sasl --enable-crypt --enable-spasswd --enable-slapd --enable-modules --enable-rlookups --enable-backends=mod --disable-ndb --disable-sql --disable-shell --disable-bdb --disable-hdb --enable-overlays=mod
+		make depend $MAKEFLAGS||make depend|| exit 100
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+
+		install -v -dm700 -o ldap -g ldap $PKG/var/lib/openldap
+		install -v -dm700 -o ldap -g ldap $PKG/etc/openldap/slapd.d
+		cp ${CWD}/*.conf ${CWD}/*.default ${CWD}/slapd.ldif $PKG/etc/openldap/
+		chmod -v 640 $PKG/etc/openldap/slapd.{conf,ldif}
+		chown -v root:ldap $PKG/etc/openldap/slapd.{conf,ldif}
+		install -v -dm755 $PKG/usr/share/doc/${PKGNAME}-${VERSION}
+		cp -vfr doc/{drafts,rfc,guide} $PKG/usr/share/doc/${PKGNAME}-${VERSION}
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

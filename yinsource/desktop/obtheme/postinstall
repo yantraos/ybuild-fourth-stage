@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+#©ACSESTECH    raj.atmakuri@acsestech.com
+
+update-desktop-database -v /usr/share/applications||true

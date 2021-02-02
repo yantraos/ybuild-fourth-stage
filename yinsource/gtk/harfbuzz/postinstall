@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#©keithhedger Wed 11 Feb 15:55:07 GMT 2015 kdhedger68713@gmail.com
+
+. /usr/share/yinstal/yapi
+
+yaps -r FreeType||true
+yaps -r fontconfig||true
+yaps -B "fontconfig-2.13.1"
+
+exit 0
+

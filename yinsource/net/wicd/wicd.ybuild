@@ -1,0 +1,60 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="Python-2.7.14 DBus-Python-1.2.6 Wireless-Tools-29 Net-tools-20101030 wpa-supplicant-2.6"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="wicd"
+TARNAME="$PKGNAME"
+VERSION="1.7.4"
+BUILD=${BUILD:-1}
+SECTION="NET"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://launchpad.net/${PKGNAME}/${VERSION%.?*}/${VERSION}/+download/${TARBALL}" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		if [$USESYSTEMD -eq 0 ];then
+			sed -e "/wpath.logrotate\|wpath.systemd/d" -e "/detection failed/ a\                self.init=\'init\/default\/wicd\'" -i setup.py 
+		fi
+		rm po/*.po
+		python setup.py configure --no-install-kde --no-install-acpi --no-install-pmutils --no-install-init --no-install-gnome-shell-extensions --docdir=/usr/share/doc/${PKGNAME}-${VERSION}
+		LANG=C python setup.py install --root=$PKG || exit 100
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

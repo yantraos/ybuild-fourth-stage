@@ -1,0 +1,80 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+PKGNAME="krb5"
+TARNAME="$PKGNAME"
+VERSION="1.17"
+BUILD=${BUILD:-1}
+SECTION="LIBS"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+#gettar "http://web.mit.edu/kerberos/dist/${TARNAME}/${VERSION}/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/9.0/LIBS/${TARBALL}" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd ${TARNAME}-${VERSION}
+		cd src
+		sed -e '/eq 0/{N;s/12 //}' -i plugins/kdb/db2/libdb2/test/run.test
+		sed -e 's@\^u}@^u cols 300}@' -i tests/dejagnu/config/default.exp
+
+		CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure --prefix=/usr --with-system-et --with-system-ss --with-system-verto=no --enable-dns-for-realm --localstatedir=/var/lib
+
+		make $MAKEFLAGS||make||exit 100
+		make install DESTDIR=$PKG || exit 100
+
+		for LIBRARY in gssapi_krb5 gssrpc k5crypto kadm5clnt kadm5srv kdb5 kdb_ldap krad krb5 krb5support verto
+		do
+			[ -e  $PKG/usr/lib/lib$LIBRARY.so ] && chmod -v 755 $PKG/usr/lib/lib$LIBRARY.so
+		done
+
+		mkdir -vp $PKG/lib${LIBDIRSUFFIX} $PKG/bin||true
+		mv -v $PKG/usr/lib${LIBDIRSUFFIX}/libkrb5.so.3* $PKG/lib${LIBDIRSUFFIX}
+		mv -v $PKG/usr/lib${LIBDIRSUFFIX}/libk5crypto.so.3* $PKG/lib${LIBDIRSUFFIX}
+		mv -v $PKG/usr/lib${LIBDIRSUFFIX}/libkrb5support.so.0* $PKG/lib${LIBDIRSUFFIX}
+
+		ln -v -sf ../../lib${LIBDIRSUFFIX}/libkrb5.so.3.3 $PKG/usr/lib${LIBDIRSUFFIX}/libkrb5.so
+		ln -v -sf ../../lib${LIBDIRSUFFIX}/libk5crypto.so.3.1 $PKG/usr/lib${LIBDIRSUFFIX}/libk5crypto.so
+		ln -v -sf ../../lib${LIBDIRSUFFIX}/libkrb5support.so.0.1 $PKG/usr/lib${LIBDIRSUFFIX}/libkrb5support.so
+
+		mv -v $PKG/usr/bin/ksu $PKG/bin
+		chmod -v 755 $PKG/bin/ksu
+
+		install -v -dm755 $PKG/usr/share/doc/${PKGNAME}-${VERSION}
+		cp -vfr ../doc/*  $PKG/usr/share/doc/${PKGNAME}-${VERSION}
+
+		unset LIBRARY
+	popd
+
+	checketc $PKG
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${PKGNAME}-${VERSION}"
+popd 2>/dev/null||true

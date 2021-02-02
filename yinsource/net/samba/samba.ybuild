@@ -1,0 +1,80 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="Python-2.7.16 libtirpc-1.1.4 Jansson-2.12 lmdb-0.9.24 rpcsvc-proto-1.4"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="samba"
+TARNAME="$PKGNAME"
+VERSION="4.10.7"
+BUILD=${BUILD:-1}
+SECTION="NET"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+OPTIONS=${OPTIONS:-""}
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://ftp.samba.org/pub/samba/stable/${TARBALL}" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+if [ $USESYSTEMD -eq 0 ];then
+	SYSTEMDOPTS="--without-systemd --without-pam"
+else
+	SYSTEMDOPTS="--with-pammodulesdir=/lib/security"
+fi
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		patch -Np0 -i $CWD/patch-source3__libads__kerberos_keytab.patch
+		CFLAGS="-I/usr/include/tirpc -ltirpc $yflags" ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-piddir=/run/samba --with-pammodulesdir=/lib/security --enable-fhs --without-ad-dc $SYSTEMDOPTS --without-ads --enable-selftest ${OPTIONS}
+
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+
+		mkdir -vp $PKG/lib||true
+		mv -v $PKG/usr/lib/libnss_win{s,bind}.so* $PKG/lib
+		ln -v -sf ../../lib/libnss_winbind.so.2 $PKG/usr/lib/libnss_winbind.so
+		ln -v -sf ../../lib/libnss_wins.so.2 $PKG/usr/lib/libnss_wins.so
+
+		mkdir -pv $PKG/etc/openldap/schema $PKG/etc/samba $PKG/usr/lib/cups/backend/||true
+
+		install -v -m644 examples/smb.conf.default $PKG/etc/samba || exit 100
+		install -v -m644 examples/LDAP/README $PKG/etc/openldap/schema/README.LDAP || exit 100
+		install -v -m644 examples/LDAP/samba* $PKG/etc/openldap/schema        || exit 100         
+		install -v -m755 examples/LDAP/{get*,ol*} $PKG/etc/openldap/schema || exit 100
+
+		ln -v -sf $PKG/usr/bin/smbspool $PKG/usr/lib/cups/backend/smb
+	popd
+
+	checketc $PKG
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

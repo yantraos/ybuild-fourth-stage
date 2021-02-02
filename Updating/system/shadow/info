@@ -1,0 +1,3 @@
+Shadow was indeed installed in OS and there is no reason to reinstall it unless you installed CrackLib or Linux-PAM after your OS system was completed.
+If you have installed CrackLib after OS, then reinstalling Shadow will enable strong password support.
+If you have installed Linux-PAM, reinstalling Shadow will allow programs such as login and su to utilize PAM.

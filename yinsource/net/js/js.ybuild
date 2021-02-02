@@ -1,0 +1,70 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="NSPR-4.21 Python-2.7.16 Zip-3.0 autoconf213-2.13 icu-64.2 xorg-libs-9.0"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="js"
+VERSION="60.8.0"
+TARNAME="mozjs"
+BUILD=${BUILD:-1}
+SECTION="NET"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.bz2"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://ftp.gnome.org/pub/gnome/teams/releng/tarballs-needing-help/${TARNAME}/${TARBALL}" $SECTION
+
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+OPTIONS="--prefix=/usr --enable-readline --with-intl-api --with-system-zlib --with-system-icu --disable-jemalloc"
+
+checkforoptions
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		export SHELL=/bin/bash
+		mkdir mozjs-build||true
+		cd mozjs-build
+
+		CFLAGS="$yflags" CXXFLAGS="$yflags" ../js/src/configure $OPTIONS
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+	popd
+
+	checketc $PKG
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true
+
+
+
+

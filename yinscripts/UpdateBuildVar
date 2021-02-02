@@ -1,0 +1,15 @@
+#!/bin/bash -e
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+if [ -e ./SystemData ];then
+	. ./SystemData
+else
+	echo "No SystemData file found ..."
+	exit 0
+fi
+
+while read
+	do
+		sed -r -i 's/\bBUILD=.*\b/BUILD=${BUILD:-1}/' ${REPLY}
+	done < <(find ${yantra}/yinsource -iname "*.ybuild")

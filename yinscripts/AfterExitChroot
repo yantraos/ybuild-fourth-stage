@@ -1,0 +1,22 @@
+#!/bin/bash -e
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+if [ -e ./SystemData ];then
+	. ./SystemData
+else
+	echo "No SystemData file found ..."
+	exit 0
+fi
+
+#this is optional see the Chroot script and the how to.
+if [ "X$EXTFOLDER" != "X" ];then
+	umount ${yantra}/${SOURCEARCHIVES} ||true
+	umount ${yantra}/${PKGARCHIVES} ||true
+fi
+
+umount ${yantra}/run||true
+umount ${yantra}/dev/pts||true
+umount -lf ${yantra}/dev ||true  
+umount ${yantra}/proc ||true
+umount ${yantra}/sys ||true

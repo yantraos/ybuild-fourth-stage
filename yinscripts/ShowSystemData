@@ -1,0 +1,40 @@
+#!/bin/bash
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+if [ -e ./SystemData ];then
+	. ./SystemData
+else
+	echo "No SystemData file found ..."
+	exit 1
+fi
+
+echo "Yantra location:" $yantra
+echo "PIBUILD=$PIBUILD"
+if [ $PIBUILD -eq 1 ];then
+	echo "PIVERS=$PIVERS"
+	echo "PIBOOTDEV=$PIBOOTDEV"
+	echo "PIROOTDEV=$PIROOTDEV"
+fi
+echo "Yantra version:" $yversion
+echo "Yantra Hostname:" $yantraNAME
+echo "Kernel version:" $KERNELVERSION
+echo "INIT type:" $INITTYPE
+echo
+echo "Folder for downloaded source archives:" $SOURCEARCHIVES
+echo "Folder for built packages:" $PKGARCHIVES
+echo "Compile in this folder:" $COMPILEAT
+echo "Package Folders Bound To Folder:" $EXTFOLDER
+echo
+echo "Yantra language:" $LANGUAGE
+echo "Raw Yantra  device:" $ROOTDEV
+echo "Yantra filesystem type:" $ROOTFSTYPE
+echo "Swap partition:" $SWAP
+echo "Suffix for Yantra lib folders ( eg /usr/lib${LIBDIRSUFFIX} ):" $LIBDIRSUFFIX
+echo
+echo "Yantra IP address:" $IP
+echo "Yantra gateway:" $GATEWAY
+echo "Yantra subnet:" $SUBNET
+echo "Yantra name server list:" $NAMESERVERS
+echo "Yantra keyboard:" $KEYBOARD
+

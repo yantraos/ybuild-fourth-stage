@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+#©ACSESTECH    raj.atmakuri@acsestech.com
+
+update-mime-database -V /usr/share/mime

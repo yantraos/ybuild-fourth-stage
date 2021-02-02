@@ -1,0 +1,53 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+PKGNAME="RTL88x2BU-Linux-Driver"
+TARNAME="$PKGNAME"
+VERSION="5.2.8"
+BUILD=1
+SECTION="HWARE"
+SUFFIX="YAPS"
+TARBALL="master.zip"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "https://github.com/RinCat/${PKGNAME}/archive/${TARBALL}" $SECTION "${PKGNAME}.zip"
+
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${PKGNAME}.zip" "zip"
+	pushd "${TARNAME}-master"
+		patch -Np0 -i ${CWD}/pkgdriver.patch
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-master"
+popd 2>/dev/null||true

@@ -1,0 +1,49 @@
+#!/bin/bash
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+if [ -e ./SystemData ];then
+	. ./SystemData
+else
+	echo "No SystemData file found ..."
+	exit 0
+fi
+
+pushd $yantra
+	mount -v --bind /dev dev
+	mount -vt proc proc proc
+	mount -vt sysfs sysfs sys
+	mount -t tmpfs tmpfs run
+
+	if [ -e dev/shm ];then
+		mkdir -pv "${yantra}$(readlink dev/shm)"||true
+	fi
+	mount -vt devpts devpts dev/pts -o gid=5,mode=620
+
+#extra folders from the host can be mounted either from here or from the chroot environment
+#dont forget to add the unmount commands to the AfterExitChroot script or unmount them before leaving the chroot.
+#you will probably need both of these ( see the how to )
+#this is the folder for the source archives:
+
+	mkdir -vp ${yantra}/${SOURCEARCHIVES}||true
+	mkdir -vp ${yantra}/${PKGARCHIVES}||true
+	if [ "X$EXTFOLDER" != "X" ];then
+		if ! mountpoint $yantra/${PKGARCHIVES} ;then
+			mount --bind $EXTFOLDER/${PKGARCHIVES} $yantra/${PKGARCHIVES}
+			mount --bind $EXTFOLDER/${SOURCEARCHIVES} $yantra/${SOURCEARCHIVES}
+		fi
+	fi
+
+#This seems to be needed now as TERM=xterm screws up ncurses
+#Set TERM as dialog needs it
+	export TERM="xterm-color"
+	if [ "X$1" = "Xsystem" ];then
+		mv ${yantra}/etc/profile ${yantra}/etc/profile.BAK||true
+		chroot "$yantra" /tools/bin/env -i HOME=/root TERM="$TERM" PS1='\u:\w\$ ' PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin /tools/bin/bash --login +h
+		mv ${yantra}/etc/profile.BAK ${yantra}/etc/profile
+	else
+		chroot "$yantra" /usr/bin/env -i HOME=/root TERM="$TERM" PS1='\u:\w\$ ' PATH=/bin:/usr/bin:/sbin:/usr/sbin /bin/bash --login
+	fi
+popd
+
+./AfterExitChroot

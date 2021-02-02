@@ -1,0 +1,60 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+PKGNAME="autoconf213"
+TARNAME="autoconf"
+VERSION="2.13"
+BUILD=1
+SECTION="DEVEL"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/DEVEL/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/9.0/DEVEL/${TARNAME}-${VERSION}-consolidated_fixes-1.patch" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		patch -Np1 -i ${SOURCEARCHIVES}/${SECTION}/${TARNAME}-${VERSION}-consolidated_fixes-1.patch
+		mv -v autoconf.texi autoconf213.texi
+		rm -v autoconf.info
+		CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure --prefix=/usr --program-suffix=2.13
+
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+		install -v -m644 autoconf213.info $PKG/usr/share/info
+		install-info --info-dir=$PKG/usr/share/info autoconf213.info
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	cp ./preinstall ./postinstall ./info "$PKG" &>/dev/null || true
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

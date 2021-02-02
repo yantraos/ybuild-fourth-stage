@@ -1,0 +1,54 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+PKGNAME="berkeley-db"
+TARNAME="db"
+VERSION="6.2.32"
+BUILD=${BUILD:-1}
+SECTION="ADMIN"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://download.oracle.com/${PKGNAME}/${TARBALL}" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		cd build_unix
+		../dist/configure --prefix=/usr --enable-compat185 --enable-dbm --disable-static --enable-cxx
+		make $MAKEFLAGS||make|| exit 100
+		make docdir=/usr/share/doc/${TARNAME}-${VERSION} install DESTDIR=$PKG || exit 100
+		chown -v -R root:root $PKG/usr/bin/db_* $PKG/usr/include/db{,_185,_cxx}.h $PKG/usr/lib/libdb*.{so,la} $PKG/usr/share/doc/${TARNAME}-${VERSION}
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

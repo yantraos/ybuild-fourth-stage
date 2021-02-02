@@ -1,0 +1,72 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="Apr-Util-1.6.1 PCRE-8.43 OpenSSL-1.1.1"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="apache"
+TARNAME="httpd"
+VERSION="2.4.41"
+BUILD=${BUILD:-1}
+SECTION="NET"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.bz2"
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://archive.apache.org/dist/httpd/${TARBALL}" $SECTION
+gettar "http://www.linuxfromscratch.org/patches/blfs/$yversion/${TARNAME}-${VERSION}-blfs_layout-1.patch" $SECTION
+
+PKG="${OUTPUT}/${PKGNAME}"
+
+DOWHAT=${1:-"build"}
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+CWD=$(pwd)
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	UIDGIDPAIR=$(findnextpair "system")
+	useradd -c "Apache Server" -d /srv/www -s /bin/false -ru $UIDGIDPAIR apache||true
+
+	pushd "${TARNAME}-${VERSION}"
+		patch -Np1 -i ${SOURCEARCHIVES}/${SECTION}/${TARNAME}-${VERSION}-blfs_layout-1.patch
+		sed '/dir.*CFG_PREFIX/s@^@#@' -i support/apxs.in
+		CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure --libdir=/usr/lib${LIBDIRSUFFIX} --enable-authnz-fcgi --enable-layout=BLFS --enable-mods-shared="all cgi" --enable-mpms-shared=all --enable-suexec=shared --with-apr=/usr/bin/apr-1-config --with-apr-util=/usr/bin/apu-1-config --with-suexec-bin=/usr/lib/httpd/suexec --with-suexec-docroot=/srv/www --with-suexec-caller=apache --with-suexec-userdir=public_html --with-suexec-logfile=/var/log/httpd/suexec.log --with-suexec-uidmin=100
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+
+		mkdir -vp $PKG/usr/lib${LIBDIRSUFFIX}/httpd $PKG/srv/www||true
+		mv -v $PKG/usr/sbin/suexec $PKG/usr/lib${LIBDIRSUFFIX}/httpd/suexec
+		chgrp apache $PKG/usr/lib${LIBDIRSUFFIX}/httpd/suexec
+		chmod 4754 $PKG/usr/lib${LIBDIRSUFFIX}/httpd/suexec
+		chown -v -R apache:apache $PKG/srv/www
+		mkdir -vp $PKG/var/log/apache2
+	popd
+
+	checketc $PKG
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

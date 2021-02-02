@@ -1,0 +1,70 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="FreeType-2.10.1 libjpeg-turbo-2.0.2 libpng-1.6.37 LibTIFF-4.0.10 lcms2-2.9 GTK-2.24.32"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="ghostscript"
+TARNAME="$PKGNAME"
+VERSION="9.27"
+BUILD=${BUILD:-1}
+SECTION="PRINT"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.xz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/PRINT/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/9.0/PRINT/${PKGNAME}-${VERSION}-upstream_fixes-1.patch" $SECTION
+gettar "http://35.154.131.43/ysarchives/9.0/PRINT/ghostscript-fonts-std-8.11.tar.gz" $SECTION
+gettar "http://35.154.131.43/ysarchives/9.0/PRINT/gnu-gs-fonts-other-6.0.tar.gz" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		rm -rf freetype lcms2 jpeg libpng zlib||true
+		patch -Np1 -i ${SOURCEARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-upstream_fixes-1.patch
+		CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure --prefix=/usr --disable-compile-inits --enable-dynamic --with-system-libtiff
+		make $MAKEFLAGS||make|| exit 100
+		make $MAKEFLAGS so||make so|| exit 100
+		make install DESTDIR=$PKG || exit 100
+		make soinstall DESTDIR=$PKG || exit 100
+		mkdir -vp $PKG/usr/include/ghostscript $PKG/usr/include $PKG/usr/share/doc $PKG/usr/share/ghostscript||true
+		install -v -m644 base/*.h $PKG/usr/include/ghostscript
+		ln -v -s ghostscript $PKG/usr/include/ps
+		ln -sfv ../ghostscript/${VERSION}/doc $PKG/usr/share/doc/${PKGNAME}-${VERSION}
+		tar -xvf ${SOURCEARCHIVES}/${SECTION}/ghostscript-fonts-std-8.11.tar.gz -C $PKG/usr/share/ghostscript --no-same-owner
+		tar -xvf ${SOURCEARCHIVES}/${SECTION}/gnu-gs-fonts-other-6.0.tar.gz -C $PKG/usr/share/ghostscript --no-same-owner
+	popd
+
+	checketc $PKG
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

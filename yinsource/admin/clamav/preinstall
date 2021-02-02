@@ -1,0 +1,9 @@
+#!/bin/bash -e
+
+#©ACSESTECH   raj.atmakuri@acsestech.com
+
+. /usr/share/yinstal/yapi
+
+UIDGIDPAIR=$(findnextpair "system")
+groupadd -g $UIDGIDPAIR clamav||true
+useradd -c "Clam" -d /dev/null -g clamav -s /bin/false -u $UIDGIDPAIR clamav||true

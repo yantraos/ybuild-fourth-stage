@@ -1,0 +1,319 @@
+#!/bin/bash -e
+
+export NODEPS=1
+
+if [ "$(yaps -S 5 make-ca)" = "false" ];then
+	cd /yinstalBuildScripts/devel/make-ca/
+	./make-ca.ybuild install
+fi
+
+if [ "$(yaps -S 5 libuv)" = "false" ];then
+	cd /yinstalBuildScripts/libs/libuv/
+	./libuv.ybuild install
+fi
+
+if [ "$(yaps -S 5 libarchive)" = "false" ];then
+	cd /yinstalBuildScripts/libs/libarchive/
+	./libarchive.ybuild install
+fi
+
+if [ "$(yaps -S 5 curl)" = "false" ];then
+	cd /yinstalBuildScripts/net/curl/
+	./curl.ybuild install
+fi
+
+if [ "$(yaps -S 5 cmake)" = "false" ];then
+	cd /yinstalBuildScripts/devel/cmake/
+	./cmake.ybuild install
+fi
+
+if [ "$(yaps -S 5 which)" = "false" ];then
+	cd /yinstalBuildScripts/sys/which/
+	./which.ybuild install
+fi
+
+if [ "$(yaps -S 5 zip)" = "false" ];then
+	cd /yinstalBuildScripts/sys/zip/
+	./zip.ybuild install
+fi
+
+if [ "$(yaps -S 5 unzip)" = "false" ];then
+	cd /yinstalBuildScripts/sys/unzip/
+	./unzip.ybuild install
+fi
+
+if [ "$(yaps -S 5 sqlite)" = "false" ];then
+	cd /yinstalBuildScripts/sys/sqlite/
+	./sqlite.ybuild install
+fi
+
+if [ "$(yaps -S 5 libpng)" = "false" ];then
+	cd /yinstalBuildScripts/libs/libpng/
+	./libpng.ybuild install
+fi
+
+if [ "$(yaps -S 5 pcre)" = "false" ];then
+	cd /yinstalBuildScripts/libs/pcre/
+	./pcre.ybuild install
+fi
+
+if [ "$(yaps -S 5 jasper)" = "false" ];then
+	cd /yinstalBuildScripts/libs/jasper/
+	./jasper.ybuild install
+fi
+
+if [ "$(yaps -S 5 git)" = "false" ];then
+	cd /yinstalBuildScripts/devel/git/
+	./git.ybuild install
+fi
+
+if [ "$(yaps -S 5 SDL)" = "false" ];then
+	cd /yinstalBuildScripts/mm/SDL/
+	./SDL.ybuild install
+fi
+
+if [ "$(yaps -S 5 SDL-image)" = "false" ];then
+	cd /yinstalBuildScripts/mm/SDL-image/
+	./SDL-image.ybuild install
+fi
+
+if [ "$(yaps -S 5 freetype)" = "false" ];then
+	cd /yinstalBuildScripts/libs/freetype/
+	./freetype.ybuild install
+fi
+
+if [ "$(yaps -S 5 fribidi)" = "false" ];then
+	export OPTIONS="--with-glib=no"
+	cd /yinstalBuildScripts/sys/fribidi/
+	./fribidi.ybuild install
+	unset OPTIONS
+fi
+
+if [ "$(yaps -S 5 nasm)" = "false" ];then
+	cd /yinstalBuildScripts/devel/nasm/
+	./nasm.ybuild install
+fi
+
+if [ "$(yaps -S 5 libcdio)" = "false" ];then
+	cd /yinstalBuildScripts/mm/libcdio/
+	./libcdio.ybuild install
+fi
+
+if [ "$(yaps -S 5 taglib)" = "false" ];then
+	cd /yinstalBuildScripts/mm/taglib/
+	./taglib.ybuild install
+fi
+
+if [ "$(yaps -S 5 libmodplug)" = "false" ];then
+	cd /yinstalBuildScripts/mm/libmodplug/
+	./libmodplug.ybuild install
+fi
+
+if [ "$(yaps -S 5 yajl)" = "false" ];then
+	cd /yinstalBuildScripts/libs/yajl/
+	./yajl.ybuild install
+fi
+
+if [ "$(yaps -S 5 tinyxml)" = "false" ];then
+	cd /yinstalBuildScripts/libs/tinyxml/
+	./tinyxml.ybuild install
+fi
+
+if [ "$(yaps -S 5 lzo)" = "false" ];then
+	cd /yinstalBuildScripts/libs/lzo/
+	./lzo.ybuild install
+fi
+
+if [ "$(yaps -S 5 giflib)" = "false" ];then
+	cd /yinstalBuildScripts/libs/giflib/
+	./giflib.ybuild install
+fi
+
+if [ "$(yaps -S 5 libjpeg-turbo)" = "false" ];then
+	cd /yinstalBuildScripts/libs/libjpeg-turbo
+	./libjpeg-turbo.ybuild install
+fi
+
+if [ "$(yaps -S 5 Python)" = "false" ];then
+	cd /yinstalBuildScripts/python/Python/
+	./Python.ybuild install
+fi
+
+if [ "$(yaps -S 5 mariadb)" = "false" ];then
+	cd /yinstalBuildScripts/admin/mariadb/
+	./mariadb.ybuild install
+fi
+
+if [ "$(yaps -S 5 libxml2)" = "false" ];then
+	cd /yinstalBuildScripts/libs/libxml2/
+	./libxml2.ybuild install
+fi
+		 
+if [ "$(yaps -S 5 libxslt)" = "false" ];then
+	cd /yinstalBuildScripts/libs/libxslt/
+	./libxslt.ybuild install
+fi
+
+if [ "$(yaps -S 5 libtirpc)" = "false" ];then
+	cd /yinstalBuildScripts/libs/libtirpc/
+	./libtirpc.ybuild install
+fi
+
+if [ "$(yaps -S 5 lmdb)" = "false" ];then
+	cd /yinstalBuildScripts/libs/lmdb/
+	./lmdb.ybuild install
+fi
+
+if [ "$(yaps -S 5 rpcsvc-proto)" = "false" ];then
+	cd /yinstalBuildScripts/libs/rpcsvc-proto/
+	./rpcsvc-proto.ybuild install
+fi
+
+if [ "$(yaps -S 5 jansson)" = "false" ];then
+	cd /yinstalBuildScripts/libs/jansson/
+	./jansson.ybuild install
+fi
+
+if [ "$(yaps -S 5 samba)" = "false" ];then
+	export OPTIONS="--without-ldap"
+	cd /yinstalBuildScripts/net/samba/
+	./samba.ybuild install
+	unset OPTIONS
+fi
+
+if [ "$(yaps -S 5 alsa-lib)" = "false" ];then
+	cd /yinstalBuildScripts/mm/alsa-lib/
+	./alsa-lib.ybuild install
+fi
+
+if [ "$(yaps -S 5 libass)" = "false" ];then
+	export OPTIONS="--disable-fontconfig --disable-require-system-font-provider"
+	cd /yinstalBuildScripts/mm/libass/
+	./libass.ybuild install
+	unset OPTIONS
+fi
+
+if [ "$(yaps -S 5 BinaryJDK)" = "false" ];then
+	cd /yinstalBuildScripts/devel/binaryjdk/
+	./binaryjdk.ybuild install
+fi
+
+if [ "$(yaps -S 5 boost)" = "false" ];then
+	cd /yinstalBuildScripts/libs/boost/
+	./boost.ybuild install
+fi
+
+if [ "$(yaps -S 5 swig)" = "false" ];then
+	cd /yinstalBuildScripts/devel/swig/
+	./swig.ybuild install
+fi
+
+if [ "$(yaps -S 5 fbset)" = "false" ];then
+	cd /yinstalBuildScripts/sys/fbset/
+	./fbset.ybuild install
+fi
+
+if [ "$(yaps -S 5 openssh)" = "false" ];then
+	cd /yinstalBuildScripts/sys/openssh/
+	./openssh.ybuild install
+fi
+
+if [ "$(yaps -S 5 glib)" = "false" ];then
+	export OPTIONS="-Ddoc=false -Dman=false"
+	cd /yinstalBuildScripts/libs/glib/
+	./glib.ybuild install
+	unset OPTIONS
+fi
+
+if [ "$(yaps -S 5 udevil)" = "false" ];then
+	cd /yinstalBuildScripts/sys/udevil/
+	./udevil.ybuild install
+fi
+
+if [ "$(yaps -S 5 dialog)" = "false" ];then
+	cd /yinstalBuildScripts/devel/dialog/
+	./dialog.ybuild install
+fi
+
+if [ "$(yaps -S 5 libssh)" = "false" ];then
+	cd /yinstalBuildScripts/libs/libssh/
+	./libssh.ybuild install
+fi
+
+if [ "$(yaps -S 5 libmicrohttpd)" = "false" ];then
+	cd /yinstalBuildScripts/net/libmicrohttpd/
+	./libmicrohttpd.ybuild install
+fi
+
+if [ "$(yaps -S 5 mtdev)" = "false" ];then
+	cd /yinstalBuildScripts/hware/mtdev/
+	./mtdev.ybuild install
+fi
+
+if [ "$(yaps -S 5 libevdev)" = "false" ];then
+	cd /yinstalBuildScripts/hware/libevdev/
+	./libevdev.ybuild install
+fi
+
+if [ "$(yaps -S 5 libinput)" = "false" ];then
+	cd /yinstalBuildScripts/hware/libinput/
+	./libinput.ybuild install
+fi
+
+if [ "$(yaps -S 5 libxkbcommon)" = "false" ];then
+	export OPTIONS="--disable-x11"
+	cd /yinstalBuildScripts/libs/libxkbcommon/
+	./libxkbcommon.ybuild install
+	unset OPTIONS
+fi
+
+if [ "$(yaps -S 5 fmt)" = "false" ];then
+	cd /yinstalBuildScripts/devel/fmt/
+	./fmt.ybuild install
+fi
+
+if [ "$(yaps -S 5 crossguid)" = "false" ];then
+	cd /yinstalBuildScripts/devel/crossguid/
+	./crossguid.ybuild install
+fi
+
+if [ "$(yaps -S 5 xkeyboard-config)" = "false" ];then
+	export OPTIONS="--disable-runtime-deps"
+	cd /yinstalBuildScripts/xorg/xkeyboard-config/
+	./xkeyboard-config.ybuild install
+	unset OPTIONS
+fi
+
+if [ "$(yaps -S 5 rapidjson)" = "false" ];then
+	cd /yinstalBuildScripts/libs/rapidjson/
+	./rapidjson.ybuild install
+fi
+
+if [ "$(yaps -S 5 libdvdread)" = "false" ];then
+	cd /yinstalBuildScripts/mm/libdvdread/
+	./libdvdread.ybuild install
+fi
+
+if [ "$(yaps -S 5 libdvdcss)" = "false" ];then
+	cd /yinstalBuildScripts/mm/libdvdcss/
+	./libdvdcss.ybuild install
+fi
+
+if [ "$(yaps -S 5 libdvdnav)" = "false" ];then
+	cd /yinstalBuildScripts/mm/libdvdnav/
+	./libdvdnav.ybuild install
+fi
+
+if [ "$(yaps -S 5 mesalib)" = "false" ];then
+	export NODEPS=
+	cd /yinstalBuildScripts/xorg/MesaLib/
+	./MesaLib.ybuild install
+	export NODEPS=1
+fi
+
+#remove pi pre built gl libs etc
+if [ "$PIBUILD" -eq 1 ];then
+	mkdir -vp /opt/hold/include /opt/hold/lib
+	mv /opt/vc/include/{EGL,GLES,GLES2} /opt/hold/include||true
+	mv /opt/vc/lib/{libbrcmEGL.so,libGLESv1_CM.so,libbrcmGLESv2.so,libEGL.so,libEGL_static.a,libGLESv2.so,libGLESv2_static.a} /opt/hold/lib||true
+fi

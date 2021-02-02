@@ -1,0 +1,63 @@
+#!/bin/bash -e
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+. /usr/share/yinstal/yapi
+. ../PkgVersions
+
+PKGNAME="eudev"
+TARNAME="$PKGNAME"
+VERSION="$EUDEV_VERS"
+BUILD=${BUILD:-1}
+SECTION="SYSTEM"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.gz"
+
+UDEV="udev-lfs-$UDEV_VERS"
+
+PKG="${OUTPUT}/${PKGNAME}"
+
+DOWHAT=${1:-"build"}
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+CWD=$(pwd)
+scriptLog "${PKGNAME}-${VERSION}"
+
+pushd $COMPILEAT 2>/dev/null||true
+	tar -xvf "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure --prefix=/usr --bindir=/sbin --sbindir=/sbin --libdir=/usr/lib${LIBDIRSUFFIX} --sysconfdir=/etc --libexecdir=/lib${LIBDIRSUFFIX} --with-rootprefix= --with-rootlibdir=/lib${LIBDIRSUFFIX} --enable-manpages --disable-static
+		LIBRARY_PATH=/tools/lib make $MAKEFLAGS||LIBRARY_PATH=/tools/lib make||LIBRARY_PATH=/tools/lib make || exit 100
+
+		make $MAKEFLAGS||make|| exit 100
+		mkdir -pv $PKG/lib/udev/rules.d
+		mkdir -pv $PKG/etc/udev/rules.d
+		mkdir -pv $PKG/lib${LIBDIRSUFFIX}/{firmware,udev/devices/pts,}||true
+		make install DESTDIR=$PKG || exit 100
+		tar -xvf ${SOURCEARCHIVES}/${SECTION}/${UDEV}.tar.xz
+		make -f ${UDEV}/Makefile.lfs install DESTDIR=$PKG || exit 100
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		/usr/bin/xyaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${OUTPUT}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${OUTPUT}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

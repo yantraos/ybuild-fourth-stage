@@ -1,0 +1,73 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="x-apps-9.0"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="xterm"
+TARNAME="$PKGNAME"
+VERSION="348"
+BUILD=${BUILD:-1}
+SECTION="XORG"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tgz"
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/XORG/${TARBALL}" $SECTION
+
+PKG="${OUTPUT}/${PKGNAME}"
+
+DOWHAT=${1:-"build"}
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+CWD=$(pwd)
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		sed -i '/v0/,+1s/new:/new:kb=^?:/' termcap
+		echo -e '\tkbs=\\177,' >>terminfo
+		TERMINFO=/usr/share/terminfo ./configure $XORG_CONFIG --with-app-defaults=/etc/X11/app-defaults
+		make $MAKEFLAGS||make || exit 100
+		make install DESTDIR=$PKG || exit 100
+		make install-ti DESTDIR=$PKG || exit 100
+		mkdir -pv $PKG/usr/share/applications
+		cp -v *.desktop $PKG/usr/share/applications/
+
+		mkdir -vp $PKG/etc/X11/app-defaults/ || true
+		cat >> $PKG/etc/X11/app-defaults/XTerm << "EOF"
+		*VT100*locale: true
+		*VT100*faceName: Monospace
+		*VT100*faceSize: 10
+		*backarrowKeyIsErase: true
+		*ptyInitialErase: true
+EOF
+	popd
+
+	checketc $PKG
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

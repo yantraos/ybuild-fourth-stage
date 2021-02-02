@@ -1,0 +1,15 @@
+#!/bin/bash -e
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+passwd root
+
+sed -i 's@/lib/systemd/systemd-udevd@/lib/udev/udevd@' "/etc/rc.d/init.d/udev"
+sed -i 's@/bin/udevadm@/sbin/udevadm@g' "/etc/rc.d/init.d/udev"
+sed -i 's@/bin/udevadm@/sbin/udevadm@g' "/etc/rc.d/init.d/udev_retry"
+sed -i 's@/lib/udev/udevd@/sbin/udevd@g' "/etc/rc.d/init.d/udev"
+/sbin/udevadm hwdb --update
+chmod +x /lib/udev/init-net-rules.sh
+/lib/udev/init-net-rules.sh
+
+

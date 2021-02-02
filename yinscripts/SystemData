@@ -1,0 +1,95 @@
+#!/bin/bash
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+#You should use the ysetUp script to create SystemData.local, or you can do it manually by setting the vars below ( not recommended ).
+if [ -e "SystemData.local" ];then
+	. "SystemData.local"
+else
+	#For example ...
+	#Set The variables between this -------------->
+	#basic stuff
+	#Mount point for your new Yantra system
+	yantra=${yantra:-/media/yantra}
+	#Yantra Version
+	yversion=${yversion:-8.0}
+	#Computer name
+	yname=${yname:-"yantra"}
+	#Yantra init type eithe bbinit or sysvinit
+	INITTYPE=yinit
+	#Place to store built packages, defaults to /tmp
+	PKGARCHIVES=${PKGARCHIVES:-"/media/SkyNet/ybpackages-${yversion}"}
+	#Place to store downloaded source archives, defaults to /tmp
+	SOURCEARCHIVES=${SOURCEARCHIVES:-"/media/SkyNet/ysarchives/${yversion}"}
+
+	#kernal version
+	#if the kernel version you want to use is not the same as the book you will have to manually download the source to $SOURCEARCHIVES
+	KERNELVERSION=4.9.9
+
+	#keyboard
+	#set keyboad lang for auto detect use
+	#KEYBOARD="$(setxkbmap -print | awk -F'+' '/xkb_symbols/ {print $2}')"
+	KEYBOARD=uk
+
+	#network
+	#Set up the network
+	GATEWAY="192.168.1.254"
+	SUBNET="255.255.255.0"
+	NAMESERVERS="208.67.222.222 208.67.220.220 8.8.8.8 $GATEWAY"
+
+	#File system type, probably ext2 or ext4
+	ROOTFSTYPE="ext2"
+	#And this <------------
+
+	#Variable below this line are computed and probably don't need changing, but feel free.
+	#computed stuff
+	LANGUAGE=$LANG
+	ROOTDEV=$(df|grep -i $yantra|awk '{print $1}')
+	SWAP=$(fdisk -l|grep swap|awk '{print $1}')
+	case $(uname -m) in
+		x86_64)
+			LIBDIRSUFFIX=64
+			;;
+		*)
+			LIBDIRSUFFIX=""
+			;;
+	esac
+
+	#set kernel version in build scripts
+	#build scripts should be at $yantra/yinsource
+	sed -ri 's/^VERSION="[0-9]+.[0-9]+.[0-9]+"/VERSION="'"${KERNELVERSION}"'"/' ${yantra}/yinsource/system/linuxheaders/linuxheaders.ybuild
+	sed -ri 's/^VERSION="[0-9]+.[0-9]+.[0-9]+"/VERSION="'"${KERNELVERSION}"'"/' ${yantra}/yinsource/kernel/kernel.ybuild
+	sed -ri "s/linuxheaders-[0-9]+.[0-9]+.[0-9]+/linuxheaders-${KERNELVERSION}/i" ${yantra}/yinsource/system/system-meta/system-${INITTYPE}-meta.ybuild
+
+	#network
+	IP="192.168.1.1"$(echo $ROOTDEV|sed 's/^[a-zA-Z\/]*//')
+fi
+
+#export yantra
+#export PIBUILD
+#export PIVERS
+#export PIBOOTDEV
+#export PIROOTDEV
+#export yname
+#export yversion
+#export KERNELVERSION
+#export INITTYPE
+#
+#export LIBDIRSUFFIX
+#export BUILTPACKAGES
+#export SOURCEARCHIVES
+#export EXTFOLDER
+#export COMPILEAT
+#export BUILDSCRIPTS
+#
+#export KEYBOARD
+#export ROOTFSTYPE
+#export ROOTDEV
+#export SWAP
+#
+#export LANGUAGE
+#
+#export IP
+#export GATEWAY
+#export SUBNET
+#export NAMESERVERS

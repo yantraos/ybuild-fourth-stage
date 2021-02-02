@@ -1,0 +1,79 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="nullmailer-2.2"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="fcron"
+TARNAME="$PKGNAME"
+VERSION="3.2.1"
+BUILD=1
+SECTION="ADMIN"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.src.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/ADMIN/${TARBALL}" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+UIDGIDPAIR=$(findnextpair "system")
+groupadd -g $UIDGIDPAIR fcron||true
+useradd -d /dev/null -c "Fcron User" -g fcron -s /bin/false -u $UIDGIDPAIR fcron||true
+
+if [ $USESYSTEMD -eq 0 ];then
+	SYSTEMDOPTS="--with-systemdsystemunitdir=no"
+else
+	SYSTEMDOPTS="--with-boot-install=no"
+fi
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure --prefix=/usr --with-boot-install=no $SYSTEMDOPTS
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+
+		sed -i 's:/var/run/fcron.pid:/run/fcron.pid:' ${PKG}/lib${LIBDIRSUFFIX}/systemd/system/fcron.service
+
+		cp -vp ${CWD}/run-parts $PKG/usr/bin
+		install -vdm754 $PKG/etc/cron.{hourly,daily,weekly,monthly}
+		mkdir -vp $PKG/var/spool/fcron||true
+		cat > $PKG/var/spool/fcron/systab.orig << "EOF"
+&bootrun 01 * * * * root run-parts /etc/cron.hourly
+&bootrun 02 4 * * * root run-parts /etc/cron.daily
+&bootrun 22 4 * * 0 root run-parts /etc/cron.weekly
+&bootrun 42 4 1 * * root run-parts /etc/cron.monthly
+EOF
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

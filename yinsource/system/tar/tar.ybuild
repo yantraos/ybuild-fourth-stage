@@ -1,0 +1,54 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+PKGNAME="tar"
+TARNAME="$PKGNAME"
+VERSION="1.32"
+BUILD=${BUILD:-1}
+SECTION="SYSTEM"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.xz"
+
+PKG="${OUTPUT}/${PKGNAME}"
+
+DOWHAT=${1:-"build"}
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+CWD=$(pwd)
+scriptLog "${PKGNAME}-${VERSION}"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		CFLAGS="$yflags" CXXFLAGS="$yflags" FORCE_UNSAFE_CONFIGURE=1 ./configure --prefix=/usr --bindir=/bin
+		make $MAKEFLAGS||make|| exit
+		make install DESTDIR="$PKG" || exit
+		make -C doc install-html docdir=/usr/share/doc/${PKGNAME}-${VERSION} DESTDIR="$PKG"
+		mkdir -vp $PKG/usr/share/man/man1||true
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

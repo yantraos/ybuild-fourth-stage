@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+. /usr/share/yinstal/yapi
+
+ALPHA=${1:-"a"}
+yglob="${ALPHA}.*"
+DATAFILE="/tmp/$$${ALPHA}-site"
+OPENINKKEDIT=${OPENINKKEDIT:=1}
+ROOT=$(findmnt --target=. -no TARGET)
+
+links -dump ftp://ftp.lfs-matrix.net/pub/blfs/8.1/$ALPHA > "$DATAFILE"
+while read
+	do
+		if [ "X$(cat "$DATAFILE"|awk '{print $NF}'|grep -v ".patch"|grep "/\b${REPLY}\b")" != "X" ];then
+			NEWVERSION="$(cat "$DATAFILE"|awk '{print $NF}'|grep -v ".patch"|grep "/\b${REPLY}\b"|awk -F/ '{print $NF}'|sed -r 's/^.*[-_]([0-9.]+)\..*/\1/')"
+			if [ $(echo "$NEWVERSION"|wc -l) -gt 1 ];then
+				echo -e "${GREEN}Manually check $(yaps -S $REPLY 3) ...${NORMAL}"
+				continue
+			fi
+			OLDVERSION=$(yaps -R "$ROOT" -S $REPLY 2)
+
+			if [ $(checkversion $NEWVERSION $OLDVERSION) -ne 0 ];then
+				echo -e "${RED}$REPLY needs adjusting ..${NORMAL}"
+				yaps -R "$ROOT" -S $REPLY 3
+				if  [ $OPENINKKEDIT -eq 1 ];then
+					kkedit "${ROOT}$(yaps -R "$ROOT" -S $REPLY 3)"
+					yaps --webpage $REPLY
+				fi
+				echo
+			fi
+		fi
+	done < <(yaps  -S "$yantraGLOB" |sed -n 's/^Package name=\(.*\)/\1/p')
+
+rm $DATAFILE

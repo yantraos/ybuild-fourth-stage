@@ -1,0 +1,267 @@
+#!/bin/bash
+
+#
+# ©ACSESTESCH  raj.atmakuri@acsestech.com
+#
+# This file (ysetUp) is part of ybuild.
+#
+# BootCD is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# at your option) any later version.
+
+# BootCD is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with BootCD.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+#$1=varname $2=message
+readWithDefault ()
+{
+	local varname="$1"
+	local varcontents="${!varname}"
+	local message="$2"
+
+	read -e -p "$message [ ${varcontents} ] "
+	if [ "X$REPLY" != "X" ];then
+		eval "${varname}=$REPLY"
+	fi
+}
+
+case $PIBUILD in
+	1)
+		LIBDIRSUFFIX=""
+		PIKERNELVERSION=4.19.y
+		PIVERS=${PIVERS:-4}
+		;;
+	*)
+		case $(uname -m) in
+			"x86_64")
+				LIBDIRSUFFIX="64"
+				;;
+			*)
+				LIBDIRSUFFIX=""
+				;;
+		esac
+esac
+
+PIBUILD=0
+USESYSTEMD=0
+
+#set variables if possible
+if [ -f ./SystemData.local ];then
+	. ./SystemData.local
+fi
+
+#set default language
+LANG=${LANG:-"en_GB"}
+
+#Mount point for your new Yantra system
+yantra=${yantra:-"/mnt/yantra"}
+readWithDefault "yantra"  "Enter Mountpoint For Yantra"
+
+#partion for boot files on pi
+if [ $PIBUILD -eq 1 ];then
+	readWithDefault "PIBOOTDEV"  "Enter BOOT Partition For Pi"
+	readWithDefault "PIROOTDEV"  "Enter ROOT Partition For Pi"
+	readWithDefault "PIVERS"  "Enter Pi Model"
+else
+	ROOTDEV=$(findmnt -no SOURCE $yantra)
+	readWithDefault "ROOTDEV"  "Enter Root Device"	
+fi
+
+#Yantra Version
+yversion=${yversion:-9.0}
+readWithDefault "yversion"  "Enter Yantra Version"
+
+#Computer name
+yname=${yname:-"yantra"}
+readWithDefault "yname"  "Enter Hostname"
+
+#Yantra init type either bbinit, sysvinit, sytemd or custom
+if [ $PIBUILD -eq 1 ];then
+	INITTYPE=${INITTYPE:-"pi-sysvinit"}
+	readWithDefault "INITTYPE"  "Enter Init Type (yinit|bbinit|pi-sysvinit)"
+else
+	INITTYPE=${INITTYPE:-"sysvinit"}
+	readWithDefault "INITTYPE"  "Enter Init Type (yinit|bbinit|sysvinit|systemd)"
+	if [ "$INITTYPE" = "systemd" ];then
+		USESYSTEMD=1
+	fi
+fi
+
+#libdir suffix
+readWithDefault "LIBDIRSUFFIX"  "Enter Suffix For Lib Folders"
+
+#buildscripts location
+BUILDSCRIPTS="/yinsource/"
+readWithDefault "BUILDSCRIPTS"  "Enter Folder For Build Scripts"
+
+#Place to store package archives, defaults to $OUTPUT
+PKGARCHIVES=${PKGARCHIVES:-"$OUTPUT"}
+readWithDefault "PKGARCHIVES" "Enter Folder For Built Package Archives"
+
+#Place to store downloaded source archives, defaults to /ysarchives/${yversion}
+SOURCEARCHIVES=${SOURCEARCHIVES:-"/ysarchives/${yversion}"}
+readWithDefault "SOURCEARCHIVES"  "Enter Folder For Source Archives"
+
+#if non empty mount the builtpackages and source folders from external disk
+EXTFOLDER="${EXTFOLDER:-""}"
+readWithDefault "EXTFOLDER"  "Bind Built Packages And Source Folders To Folder"
+
+#compile here
+COMPILEAT="${COMPILEAT:-"$SOURCEARCHIVES"}"
+readWithDefault "COMPILEAT"  "Compile In This Folder"
+
+#kernal version
+#if the kernel version you want to use is not the same as the book you will have to manually download the source to $SOURCEARCHIVES
+#pi or normal
+if [[ $PIBUILD -eq 1 ]];then
+	KERNELVERSION=$PIKERNELVERSION
+else
+	KV=$(curl -q http://www.linuxfromscratch.org/lfs/view/$yversion/longindex.html 2>/dev/null|sed -n 's|<strong class="item">lfskernel-\(.*\):</strong> <span class=|\1|p'|sed -n 's|[[:space:]]||pg')
+	KERNELVERSION=${KERNELVERSION:-$KV}
+	readWithDefault "KERNELVERSION"  "Enter Kernel Version"
+fi
+
+#keyboard
+#set keyboad lang for auto detect use
+#KEYBOARD="$(setxkbmap -print | awk -F'+' '/xkb_symbols/ {print $2}')"
+KEYBOARD=${KEYBOARD:-"uk"}
+read -e -p "Enter Keyboard " -i "[ $KEYBOARD ] "
+
+#File system type, probably ext2 or ext4
+ROOTFSTYPE=${ROOTFSTYPE:-$(findmnt -no FSTYPE $yantra)}
+readWithDefault "ROOTFSTYPE"  "Enter Root FS Type"
+
+#Variable below this line are computed and probably don't need changing, but feel free.
+#computed stuff
+
+#ROOTDEV=$(findmnt -no SOURCE $yantra)
+#readWithDefault "ROOTDEV"  "Enter Root Device"
+
+SWAP=${SWAP:-$(blkid|grep swap|tail -n1|awk -F: '{print $1}')}
+readWithDefault "SWAP"  "Enter Swap Device Or Path To Swapfile"
+
+LANGUAGE=${LANGUAGE:-$LANG}
+readWithDefault "LANGUAGE"  "Enter Language"
+
+#network
+IP=${IP:-"192.168.1.1"$(echo $ROOTDEV|sed 's/^[a-zA-Z\/]*//')}
+readWithDefault "IP"  "Enter IP"
+
+#Set up the network
+GATEWAY=${GATEWAY:-"192.168.1.254"}
+readWithDefault "GATEWAY"  "Enter Gateway IP"
+
+SUBNET=${SUBNET:-"255.255.255.0"}
+readWithDefault "SUBNET"  "Enter Subnet IP"
+
+NAMESERVERS=${NAMESERVERS:-"208.67.222.222 208.67.220.220 8.8.8.8 $GATEWAY"}
+readWithDefault "NAMESERVERS"  "Enter Name Servers IP List"
+
+echo "----SUMMARY----"
+echo 
+echo "yantra=$yantra"
+echo "PIBUILD=$PIBUILD"
+if [ $PIBUILD -eq 1 ];then
+	echo "PIVERS=$PIVERS"
+	echo "PIBOOTDEV=$PIBOOTDEV"
+	echo "PIROOTDEV=$PIROOTDEV"
+fi
+echo "yversion=$yversion"
+echo "yname=$yantraNAME"
+echo "INITTYPE=$INITTYPE"
+echo "USESYSTEMD=$USESYSTEMD"
+
+echo "LIBDIRSUFFIX=$LIBDIRSUFFIX"
+echo "BUILDSCRIPTS=$BUILDSCRIPTS"
+echo "SOURCEARCHIVES=$SOURCEARCHIVES"
+echo "PKGARCHIVES=$PKGARCHIVES"
+echo "EXTFOLDER=$EXTFOLDER"
+echo "COMPILEAT=$COMPILEAT"
+echo "KERNELVERSION=$KERNELVERSION"
+echo "KEYBOARD=$KEYBOARD"
+echo "ROOTFSTYPE=$ROOTFSTYPE"
+echo "ROOTDEV=$ROOTDEV"
+echo "SWAP=$SWAP"
+
+echo "LANGUAGE=$LANGUAGE"
+
+echo "IP=$IP"
+echo "GATEWAY=$GATEWAY"
+echo "SUBNET=$SUBNET"
+echo "NAMESERVERS=\"$NAMESERVERS\""
+echo "--------"
+
+SUMMARY="N/y"
+readWithDefault "SUMMARY"  "Write Config Files And Copy Data Etc"
+
+if [ ${SUMMARY^^} != "Y" ];then
+	exit 1
+fi
+
+#set kernel version in build scripts
+#build scripts should be at $yantra/yinsource
+#sed -ri 's/^VERSION="[0-9]+.[0-9]+.[0-9]+"/VERSION="'"${KERNELVERSION}"'"/' ${yantra}/${BUILDSCRIPTS}/system/linuxheaders/linuxheaders.ybuild
+#sed -ri "s/linuxheaders-[0-9]+.[0-9]+.[0-9]+/linuxheaders-${KERNELVERSION}/i" ${yantra}/${BUILDSCRIPTS}/system/system-meta/system-${INITTYPE}-meta.ybuild
+ln -svf system-${INITTYPE}-meta.ybuild ${yantra}/${BUILDSCRIPTS}/system/system-meta/system-meta.ybuild
+if [ $PIBUILD -eq 1 ];then
+	sed -ri 's#PIBOOTDEV=.*#PIBOOTDEV="'$PIBOOTDEV'"#' ${yantra}/${BUILDSCRIPTS}/system/system-meta/system-${INITTYPE}-meta.ybuild
+	sed -ri 's#PIROOTDEV=.*#PIROOTDEV="'$PIROOTDEV'"#' ${yantra}/${BUILDSCRIPTS}/system/system-meta/system-${INITTYPE}-meta.ybuild
+	sed -ri 's#ROOTFSTYPE=.*#ROOTFSTYPE="'$ROOTFSTYPE'"#' ${yantra}/${BUILDSCRIPTS}/system/system-meta/system-${INITTYPE}-meta.ybuild
+else
+	sed -ri 's/^VERSION="[0-9]+.[0-9]+.[0-9]+"/VERSION="'"${KERNELVERSION}"'"/' ${yantra}/${BUILDSCRIPTS}/kernel/kernel.ybuild
+	sed -ri 's/^VERSION="[0-9]+.[0-9]+.[0-9]+"/VERSION="'"${KERNELVERSION}"'"/' ${yantra}/${BUILDSCRIPTS}/kernel/firmware.ybuild
+fi
+
+cat > $yantra/yinscripts/SystemData.local << EOF
+
+yantra=$yantra
+PIBUILD=$PIBUILD
+PIVERS=$PIVERS
+PIBOOTDEV=$PIBOOTDEV
+PIROOTDEV=$PIROOTDEV
+yname=$yantraNAME
+yversion=$yversion
+KERNELVERSION=$KERNELVERSION
+INITTYPE=$INITTYPE
+USESYSTEMD=$USESYSTEMD
+
+LIBDIRSUFFIX=$LIBDIRSUFFIX
+SOURCEARCHIVES=$SOURCEARCHIVES
+PKGARCHIVES=$PKGARCHIVES
+EXTFOLDER=$EXTFOLDER
+COMPILEAT=$COMPILEAT
+BUILDSCRIPTS=$BUILDSCRIPTS
+
+KEYBOARD=$KEYBOARD
+ROOTFSTYPE=$ROOTFSTYPE
+ROOTDEV=\$(findmnt -no SOURCE \$yantra)
+SWAP=$SWAP
+
+LANGUAGE=$LANGUAGE
+
+IP=$IP
+GATEWAY=$GATEWAY
+SUBNET=$SUBNET
+NAMESERVERS="$NAMESERVERS"
+EOF
+
+sudo mkdir -vp $yantra/etc||true
+cat > /tmp/ypkg.rc << EOF
+yversion=$yversion
+OUTPUT=$PKGARCHIVES
+SOURCEARCHIVES=$SOURCEARCHIVES
+BUILDSCRIPTS=$BUILDSCRIPTS
+COMPILEAT=$COMPILEAT
+USESYSTEMD=$USESYSTEMD
+PIBUILD=$PIBUILD
+LANG=$LANGUAGE
+EOF
+sudo mv /tmp/ypkg.rc $yantra/etc/
+

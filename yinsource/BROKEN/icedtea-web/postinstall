@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#©ACSESTECH   raj.atmakuri@acsestech.com
+
+. /usr/share/yinstal/yapi
+
+mkdir -vp /usr/lib${LIBDIRSUFFIX}/mozilla/plugins ||true
+ln -s ${JAVA_HOME}/jre/lib/IcedTeaPlugin.so /usr/lib${LIBDIRSUFFIX}/mozilla/plugins/ ||true
+
+mandb -c ${JAVA_HOME}/man
+
+exit 0

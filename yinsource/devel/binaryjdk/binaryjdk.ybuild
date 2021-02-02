@@ -1,0 +1,67 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+PKGNAME="BinaryJDK"
+TARNAME="OpenJDK"
+VERSION="12.0.2"
+BUILD=${BUILD:-1}
+SECTION="DEVEL"
+SUFFIX="YAPS"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+MINORVERSION="+9"
+TARSUFFIX=".tar.xz"
+
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+scriptLog "${PKGNAME}-${VERSION}"
+
+case $ARCH in
+	x86_64)
+		gettar "http://35.154.131.43/ysarchives/9.0/DEVEL/openjdk-${VERSION}_linux-x64_bin.tar.gz" $SECTION "${PKGNAME}${TARSUFFIX}"
+		;;
+	i?86)
+		gettar "http://35.154.131.43/ysarchives/9.0/DEVEL/${TARNAME}-11.0.2${MINORVERSION}-i686-bin.tar.xz" $SECTION "${PKGNAME}${TARSUFFIX}"
+		;;
+	arm*)
+		TARSUFFIX=".tar.gz"
+		gettar "http://cdn.azul.com/zulu-embedded/bin/ezdk-1.8.0_162-8.27.0.91-eval-linux_aarch32hf.tar.gz"  $SECTION "${PKGNAME}${TARSUFFIX}"
+		;;
+esac
+
+pushd $COMPILEAT 2>/dev/null||true
+	mkdir -vp ${SOURCEARCHIVES}/${SECTION}/${PKGNAME}||true
+	tar  --strip-components=1 -xvf "${SOURCEARCHIVES}/${SECTION}/${PKGNAME}${TARSUFFIX}" -C ${SOURCEARCHIVES}/${SECTION}/${PKGNAME}
+	pushd ${SOURCEARCHIVES}/${SECTION}/${PKGNAME}
+		mkdir -vp  $PKG/opt/${PKGNAME} ||true
+		mv -v * $PKG/opt/${PKGNAME}
+		chown -R root:root $PKG/opt
+		ln -sv ${PKGNAME} $PKG/opt/jdk
+	popd
+
+	checketc $PKG
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${SOURCEARCHIVES}/${SECTION}/${PKGNAME}"
+popd 2>/dev/null||true

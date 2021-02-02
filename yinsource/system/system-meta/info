@@ -1,0 +1,8 @@
+The package installs a complete LFS system plus openssl and wget.
+
+The init system is either sysvinit, yinit, busybox or sysvinit for RPi denpending on what build script is used.
+
+system-sysvinit-meta.ybuild
+system-yinit-meta.ybuild
+system-bbinit-meta.ybuild
+system-pi-sysvinit-meta.ybuild

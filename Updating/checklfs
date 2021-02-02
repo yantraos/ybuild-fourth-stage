@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#. /usr/share/yinstal/yapi
+RED='\e[1;31m'
+GREEN='\e[1;32m'
+BLUE='\e[1;34m'
+BLACK='\e[0;30m'
+NORMAL='\e[0;0m'
+
+
+yvers=8.2
+UF="updatefile"
+ROOT="$(readlink -f ..)"
+ROOT=/media/yhex
+ROOT=$(findmnt --target=. -no TARGET)
+
+yaps -R "$ROOT" -U
+
+links http://www.linuxfromscratch.org/lfs/view/${yvers}/chapter01/whatsnew.html -dump |sed 's/^ *\* *//g'|sed 's/^ *//g' |sed 's/^ *\* *//g' > "$UF"
+
+while read
+	do
+		pkg=$(echo "$REPLY"|sed 's/^\s*\(.*\) \(.*\)$/\1/')
+		if [ X$pkg != "X" ] && [ X$pkg != "XAdded:" ] && [ X$pkg != "XUpgraded" ];then
+			if yaps -R "$ROOT" -C ${pkg%-?*} 2>&1|grep -i "ok" 2>&1>/dev/null;then
+				if yaps -R "$ROOT" ${pkg%-?*} &>/dev/null;then
+					echo -e "${GREEN}$pkg${NORMAL} is up to date."
+				else
+					echo -e "No package data for ${RED}${pkg}${NORMAL}"
+				fi
+			else
+				echo -e "${RED}${pkg%-?*}-$(yaps -S ${pkg%-?*} 2)${NORMAL} may need upgrading to ${BLUE}$REPLY${NORMAL}"
+				yaps -R "$ROOT" -S ${pkg%-?*} 3
+				echo
+			fi
+		fi
+	done < <(sed -n '/^Upgraded to:$/,/^Added/ p' "$UF"|sort)
+
+sed -n '/^Added:$/,/Prev/ p' "$UF"
+
+#yaps -P 2>/dev/null|sed 's/^\(More info here:.*\)$/\1\n/g'

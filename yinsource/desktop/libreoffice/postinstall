@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#©ACSESTECH    raj.atmakuri@acsestech.com
+
+. /usr/share/yinstal/yapi
+
+update-desktop-database
+exit 0
+

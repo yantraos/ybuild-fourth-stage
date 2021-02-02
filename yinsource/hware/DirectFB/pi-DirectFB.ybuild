@@ -1,0 +1,58 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+PKGNAME="DirectFB"
+TARNAME="$PKGNAME"
+VERSION="1.6.3"
+BUILD=1
+SECTION="HWARE"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/HWARE/${TARBALL}" $SECTION
+#https://web.archive.org/web/20150323120731/http://www.directfb.org/downloads/Core/DirectFB-1.7/DirectFB-1.7.0.tar.gz
+#gettar "https://web.archive.org/web/20150323120731/http://www.directfb.org/downloads/Core/DirectFB-1.7/DirectFB-1.7.0.tar.gz" $SECTION
+
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		CFLAGS="$yflags -Wno-error" CXXFLAGS="$yflags -Wno-error" EGL_LIBS="-lEGL -lGLESv2 $LIBS -L/opt/vc/lib" EGL_CFLAGS="-I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads" ./configure --prefix=/usr --enable-zlib --disable-x11 --disable-sdl --disable-vnc --disable-osx --enable-fbdev --disable-x11vdpau --disable-mesa --enable-egl --with-gfxdrivers=gles2
+		sed -i 's/-Werror-implicit-function-declaration//g' systems/egl/Makefile
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+		cp ${CWD}/replaceDFBCursor $PKG/usr/bin
+		cp ${CWD}/cursor.png $PKG/usr/share/$PKGNAME-$VERSION
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

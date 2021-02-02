@@ -1,0 +1,70 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="BinaryJDK-12.0.2 make-ca-1.4 alsa-lib-1.1.9 giflib-5.2.1 cpio-2.12 Cups-2.2.12 UnZip-6.0 Wget-1.20.3 Which-2.21 xorg-libs-9.0 Zip-3.0"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="OpenJDK"
+TARNAME="$PKGNAME"
+VERSION="12.0.2"
+BUILD=${BUILD:-1}
+SECTION="DEVEL"
+SUFFIX="YAPS"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+TARROOTPKGNAME="jdk12u"
+TARROOTPKGSUBVERSION="+10"
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/DEVEL/jdk-${VERSION}${TARROOTPKGSUBVERSION}.tar.bz2" $SECTION
+
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	tar -xvf "${SOURCEARCHIVES}/${SECTION}/jdk-${VERSION}${TARROOTPKGSUBVERSION}.tar.bz2"
+	pushd "${TARROOTPKGNAME}-jdk-${VERSION}${TARROOTPKGSUBVERSION}"
+		. /etc/profile.d/openjdk.sh
+		PATH="${PATH}:/opt/jdk/bin"
+		unset JAVA_HOME
+		bash configure --enable-unlimited-crypto --disable-warnings-as-errors --with-stdc++lib=dynamic --with-giflib=system --with-lcms=system --with-libjpeg=system --with-libpng=system --with-zlib=system --with-version-build="10" --with-version-pre="" --with-version-opt="" --with-cacerts-file=/etc/pki/tls/java/cacerts
+		make images
+		install -vdm755 $PKG/opt/jdk-${VERSION}${TARROOTPKGSUBVERSION}
+		cp -Rpv build/*/images/jdk/* $PKG/opt/jdk-${VERSION}${TARROOTPKGSUBVERSION}
+		find $PKG/opt/jdk-${VERSION}${TARROOTPKGSUBVERSION} -name \*.diz -delete
+		for s in 16 24 32 48
+			do
+				install -vDm644 src/java.desktop/unix/classes/sun/awt/X11/java-icon${s}.png $PKG/usr/share/icons/hicolor/${s}x${s}/apps/java.png
+			done
+	popd
+
+	checketc $PKG
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARROOTPKGNAME}-jdk-${VERSION}${TARROOTPKGSUBVERSION}"
+popd 2>/dev/null||true
+

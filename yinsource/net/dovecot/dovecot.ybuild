@@ -1,0 +1,75 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="mysql-5.6.16 luceneplus-3.0.7 OpenSSL-1.1.0 libtirpc-1.0.2"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="dovecot"
+TARNAME="$PKGNAME"
+VERSION="2.3.0"
+BUILD=${BUILD:-1}
+SECTION="NET"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://www.dovecot.org/releases/2.2/${TARBALL}" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure --prefix=/usr --docdir=/usr/share/doc/${PKGNAME}-${VERSION} --with-mysql --with-lucene
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+		mkdir -vp $PKG/etc/dovecot
+		cp -rv $PKG/usr/share/doc/${PKGNAME}-${VERSION}/example-config/* $PKG/etc/dovecot
+
+		sed -i '/^\!include / s/^/#/' $PKG/etc/dovecot/dovecot.conf
+
+		cat > $PKG/etc/dovecot/local.conf << "EOF"
+protocols = imap
+ssl = no
+# The next line is only needed if you have no IPv6 network interfaces
+listen = *
+mail_location = mbox:~/Mail:INBOX=/var/mail/%u
+userdb {
+driver = passwd
+}
+passdb {
+driver = shadow
+}
+EOF
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

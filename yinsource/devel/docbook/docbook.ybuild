@@ -1,0 +1,60 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="sgml-common-0.6.3 UnZip-6.0"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="docbook"
+TARNAME="$PKGNAME"
+VERSION="3.1"
+BUILD=1
+SECTION="DEVEL"
+SUFFIX="YAPS"
+TARBALL="docbk31.zip"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/DEVEL/${TARBALL}" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	mkdir -vp ${PKGNAME}||true
+	pushd "${PKGNAME}"
+		unzip -o "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+		sed -i -e '/ISO 8879/d' -e 's|DTDDECL "-//OASIS//DTD DocBook V3.1//EN"|SGMLDECL|g' docbook.cat
+		install -v -d -m755 $PKG/usr/share/sgml/docbook/sgml-dtd-3.1
+		chown -R root:root .
+		install -v docbook.cat $PKG/usr/share/sgml/docbook/sgml-dtd-3.1/catalog
+		cp -v -af *.dtd *.mod *.dcl $PKG/usr/share/sgml/docbook/sgml-dtd-3.1
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${PKGNAME}"
+popd 2>/dev/null||true

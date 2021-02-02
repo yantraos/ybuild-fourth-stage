@@ -1,0 +1,73 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+PKGNAME="clamav"
+TARNAME="$PKGNAME"
+VERSION="0.103.0"
+BUILD=${BUILD:-1}
+SECTION="ADMIN"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/ADMIN/${TARBALL}" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	COUNTRY=${COUNTRY:-uk}
+	$CWD/preinstall
+
+	pushd "${TARNAME}-${VERSION}"
+		CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure --prefix=/usr --localstatedir=/var --sysconfdir=/etc --mandir=/usr/man --with-user=clamav --with-group=clamav --with-dbdir=/var/lib/clamav --disable-milter --enable-id-check --enable-clamdtop --disable-static --disable-experimental #--enable-llvm
+
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+
+		#thanks to slackware -->
+		pushd "$PKG"
+			sed -i "s/^\#DatabaseMirror.*/DatabaseMirror db.${COUNTRY}.clamav.net/"   etc/freshclam.conf.sample
+			sed   -e "s/^Example/#Example/"   -e "s/^\#LogSyslog/LogSyslog/"   -e "s/^\#LogFacility/LogFacility/"   -e "s/^\#PidFile.*/PidFile \/var\/run\/clamav\/freshclam.pid/"   -e "s/^\#UpdateLogFile.*/UpdateLogFile \/var\/log\/clamav\/freshclam.log/"   -e "s/^\#AllowSupplementaryGroups.*/AllowSupplementaryGroups yes/"   -e "s/^\#DatabaseOwner.*/DatabaseOwner clamav/"   -e "s/^\#NotifyClamd.*/NotifyClamd \/etc\/clamd.conf/"   -i etc/freshclam.conf.sample
+			sed   -e "s/^Example/#Example/"   -e "s/^\#LogSyslog/LogSyslog/"   -e "s/^\#LogFacility/LogFacility/"   -e "s/^\#LogFile\ .*/LogFile \/var\/log\/clamav\/clamd.log/"   -e "s/^\#PidFile.*/PidFile \/var\/run\/clamav\/clamd.pid/"   -e "s/^\#LocalSocket\ .*/LocalSocket \/var\/run\/clamav\/clamd.socket/"   -e "s/^\#LocalSocketGroup.*/LocalSocketGroup clamav/"   -e "s/^\#LocalSocketMode/LocalSocketMode/"   -e "s/^\#FixStaleSocket/FixStaleSocket/"   -e "s/^\#User.*/User clamav/"   -e "s/^\#AllowSupplementaryGroups.*/AllowSupplementaryGroups yes/"   -e "s/^\#ExitOnOOM/ExitOnOOM/"   -i etc/clamd.conf.sample
+			mv etc/clamd.conf.sample etc/clamd.conf
+			mv etc/freshclam.conf.sample etc/freshclam.conf
+		popd
+
+		mkdir -p $PKG/var/lib/clamav $PKG/var/log/clamav $PKG/var/run/clamav $PKG//etc/logrotate.d ||true
+
+		# Fixup some ownership and permissions issues
+		touch $PKG/var/lib/clamav/main.cvd $PKG/var/lib/clamav/daily.cvd
+		#thanks to slackware <--
+
+		cp $CWD/logrotate.clamav $PKG//etc/logrotate.d
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

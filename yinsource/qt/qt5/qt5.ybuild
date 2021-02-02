@@ -1,0 +1,145 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="xorg-libs-9.0 alsa-lib-1.1.9 DBus-1.12.16 MesaLib-19.1.4 libxkbcommon xcb-util-image-0.4.0 xcb-util-keysyms-0.4.0 xcb-util-renderutil-0.3.9 xcb-util-wm-0.4.1 pulseaudio-12.2 pciutils-3.6.2 NSS-3.35"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="qt5"
+TARNAME="qt-everywhere-src"
+VERSION="5.14.1"
+BUILD=${BUILD:-1}
+SECTION="QT"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.xz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "https://download.qt.io/archive/qt/${VERSION%.?*}/${VERSION}/single/${TARBALL}" $SECTION
+
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd ${TARNAME}-${VERSION}
+		sed -i 's/python /python3 /' qtdeclarative/qtdeclarative.pro qtdeclarative/src/3rdparty/masm/masm.pri
+		export QT5PREFIX=/usr
+		export QT5BINDIR=$QT5PREFIX/bin
+		export QT5LIBS=${QT5PREFIX}/lib${LIBDIRSUFFIX}/${PKGNAME}
+		export QT5INCLUDES=${QT5PREFIX}/include/${PKGNAME}
+		export QT5DATA=${QT5PREFIX}/share/${PKGNAME}
+		export QT5DOCS=${QT5PREFIX}/share/doc/${PKGNAME}
+		export QT5TRANSLATIONS=${QT5PREFIX}/share/${PKGNAME}/translations
+		export QT5EXAMPLES=${QT5PREFIX}/share/doc/${PKGNAME}/examples
+		export QT5IMPORTS=${QT5LIBS}/imports
+		export QT5PLUGINS=${QT5LIBS}/plugins
+
+		./configure -prefix ${QT5PREFIX} -sysconfdir /etc/xdg -bindir $QT5BINDIR -headerdir ${QT5INCLUDES} -libdir ${QT5LIBS} -archdatadir ${QT5LIBS} -datadir ${QT5DATA} -docdir ${QT5DOCS} -translationdir ${QT5TRANSLATIONS} -examplesdir ${QT5EXAMPLES} -confirm-license -opensource -dbus-linked -openssl-linked -system-sqlite -system-harfbuzz -plugindir ${QT5PLUGINS} -importdir ${QT5IMPORTS} -no-rpath -skip qtwebengine
+
+		make $MAKEFLAGS||make|| exit 100
+		make install INSTALL_ROOT=$PKG || exit 100
+
+		find ${PKG}${QT5PREFIX}/ -name *.prl -exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+		install -v -dm755 $PKG/usr/share/pixmaps/ $PKG/usr/share/applications $PKG/etc/profile.d
+		install -v -Dm644 ../${TARNAME}-${VERSION}/qttools/src/assistant/assistant/images/assistant-128.png $PKG/usr/share/pixmaps/assistant-qt5.png
+		install -v -Dm644 ../${TARNAME}-${VERSION}/qttools/src/designer/src/designer/images/designer.png $PKG/usr/share/pixmaps/designer-qt5.png
+		install -v -Dm644 ../${TARNAME}-${VERSION}/qttools/src/linguist/linguist/images/icons/linguist-128-32.png $PKG/usr/share/pixmaps/linguist-qt5.png
+		install -v -Dm644 ../${TARNAME}-${VERSION}/qttools/src/qdbus/qdbusviewer/images/qdbusviewer-128.png $PKG/usr/share/pixmaps/qdbusviewer-qt5.png
+		install -dm755 $PKG/usr/share/applications
+
+		mkdir -vp $PKG/usr/lib${LIBDIRSUFFIX}/pkgconfig
+		pushd $PKG/usr/lib${LIBDIRSUFFIX}/pkgconfig
+			ln -sv ../qt5/pkgconfig/*.pc .
+		popd
+
+		pushd ${PKG}/${QT5BINDIR}
+			for file in moc uic rcc qmake lconvert lrelease lupdate
+				do
+					ln -svf $file $file-qt5
+				done
+		popd
+	popd
+
+	mkdir -vp ${PKG}/usr/share/applications ${PKG}/etc/profile.d/||true
+	cat > ${PKG}/usr/share/applications/assistant-qt5.desktop << EOF
+[Desktop Entry]
+Name=Qt5 Assistant 
+Comment=Shows Qt5 documentation and examples
+Exec=assistant
+Icon=assistant-qt5.png
+Terminal=false
+Encoding=UTF-8
+Type=Application
+Categories=Qt;Development;Documentation;
+EOF
+
+	cat > ${PKG}/usr/share/applications/designer-qt5.desktop << EOF
+[Desktop Entry]
+Name=Qt5 Designer
+GenericName=Interface Designer
+Comment=Design GUIs for Qt5 applications
+Exec=designer
+Icon=designer-qt5.png
+MimeType=application/x-designer;
+Terminal=false
+Encoding=UTF-8
+Type=Application
+Categories=Qt;Development;
+EOF
+
+	cat > ${PKG}/usr/share/applications/linguist-qt5.desktop << EOF
+[Desktop Entry]
+Name=Qt5 Linguist
+Comment=Add translations to Qt5 applications
+Exec=linguist
+Icon=linguist-qt5.png
+MimeType=text/vnd.trolltech.linguist;application/x-linguist;
+Terminal=false
+Encoding=UTF-8
+Type=Application
+Categories=Qt;Development;
+EOF
+
+	cat > ${PKG}/usr/share/applications/qdbusviewer-qt5.desktop << EOF
+[Desktop Entry]
+Name=Qt5 QDbusViewer 
+GenericName=D-Bus Debugger
+Comment=Debug D-Bus applications
+Exec=qdbusviewer
+Icon=qdbusviewer-qt5.png
+Terminal=false
+Encoding=UTF-8
+Type=Application
+Categories=Qt;Development;Debugger;
+EOF
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

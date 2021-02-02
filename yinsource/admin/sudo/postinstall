@@ -1,0 +1,13 @@
+#!/bin/bash -e
+
+#©ACSESTECH     raj.atmakuri@acsestech.com
+
+. /usr/share/yinstal/yapi
+
+mkdir -vp /etc/sudoers.d || true
+
+cat > /etc/sudoers.d/sudo << "EOF"
+Defaults secure_path="/usr/bin:/bin:/usr/sbin:/sbin"
+%wheel ALL=(ALL) ALL
+EOF
+

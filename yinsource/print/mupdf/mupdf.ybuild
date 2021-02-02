@@ -1,0 +1,64 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="xorg-libs-9.0 OpenJPEG-2.3.1"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="mupdf"
+TARNAME="$PKGNAME"
+VERSION="1.16.1"
+BUILD=1
+SECTION="PRINT"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}-source.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/PRINT/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/9.0/PRINT/${PKGNAME}-${VERSION}-shared_libs-1.patch" $SECTION
+
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}-source"
+		patch -Np1 -i ${SOURCEARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-shared_libs-1.patch
+		#freeglut NOT installed
+		sed -i 's/USE_SYSTEM_GLUT := yes/#USE_SYSTEM_GLUT := yes/' Makethird
+		USE_SYSTEM_LIBS=yes make
+		USE_SYSTEM_LIBS=yes make prefix=/usr build=release docdir=/usr/share/doc/${PKGNAME}-${VERSION} install 
+		DESTDIR=$PKG || exit 100
+		#ln -sfv mupdf-x11-curl $PKG/usr/bin/mupdf
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	cp ./preinstall ./postinstall ./info "$PKG" &>/dev/null || true
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}-source"
+popd 2>/dev/null||true

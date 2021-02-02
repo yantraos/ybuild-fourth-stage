@@ -1,0 +1,65 @@
+#!/bin/bash -e
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+#Warn and quit
+#Set The variables between this -------------->
+#And then remove/comment out the next line
+echo -e "\n!!! WARNING !!!\nYou must set the variables in ./SystemData before proceeding!\n";exit 1
+
+#basic stuff
+#Mount point for your new Yantra system
+yantra=/media/yantra1
+#Yantra Version
+yversion=7.8
+#Computer name
+yname="yantra1"
+#Yantra init type eithe bbinit or sysvinit
+INITTYPE=bbinit
+#Place to store built packages, defaults to /tmp
+BUILTPACKAGES="/media/SkyNet/ybpackages-${yversion}"
+#Place to store downloaded source archives, defaults to /tmp
+SOURCEARCHIVES="/media/SkyNet/ysarchives"
+
+#kernal version
+#if the kernel version you want to use is not the same as the book you will have to manually download the source to $SOURCEARCHIVES
+KERNELVERSION=4.2
+
+#keyboard
+#set keyboad lang for auto detect use
+#KEYBOARD="$(setxkbmap -print | awk -F'+' '/xkb_symbols/ {print $2}')"
+KEYBOARD=uk
+
+#network
+#Set up the network
+GATEWAY="192.168.1.254"
+SUBNET="255.255.255.0"
+NAMESERVERS="208.67.222.222 208.67.220.220 8.8.8.8 $GATEWAY"
+
+#File system type, probably ext2 or ext4
+ROOTFSTYPE="ext2"
+#And this <------------
+
+#Variable below this line are computed and probably don't need changing, but feel free.
+#computed stuff
+LANGUAGE=$LANG
+ROOTDEV=$(df --output=source $yantra|tail -n 1)
+SWAP=$(/sbin/swapon --noheadings --show|awk '{print $1}')
+case $(uname -m) in
+	x86_64)
+		LIBDIRSUFFIX=64
+		;;
+	*)
+		LIBDIRSUFFIX=""
+		;;
+esac
+
+#set kernel version in build scripts
+#build scripts should be at $yantra/yinsource
+sed -ri 's/^VERSION="[0-9]+.[0-9]+.[0-9]+"/VERSION="'"${KERNELVERSION}"'"/' ${yantra}/yinsource/system/linuxheaders/linuxheaders.ybuild
+sed -ri 's/^VERSION="[0-9]+.[0-9]+.[0-9]+"/VERSION="'"${KERNELVERSION}"'"/' ${yantra}/yinsource/kernel/kernel.ybuild
+sed -ri "s/linuxheaders-[0-9]+.[0-9]+.[0-9]+/linuxheaders-${KERNELVERSION}/i" ${yantra}/yinsource/system/system-meta/system-${INITTYPE}-meta.ybuild
+
+#network
+IP="192.168.1.1"$(echo $ROOTDEV|sed 's/^[a-zA-Z\/]*//')
+

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+yversion=LFS7.7
+
+pushd ..
+	svn commit -m "$(date)"
+popd
+
+pushd /tmp
+	svn co file:///media/LinuxData/Development/SVN/LFSDevelopment/${yversion}
+	cd ${yversion}/yinsource
+	THISREPO=$(pwd)
+
+	find -iname ".svn" -exec rm -r '{}' \;
+
+	pushd ..
+		tar -czvf complete.tar.gz yinsource
+		tar -czvf lfsscripts.tar.gz yinscripts
+		pushd yinsource
+			find .  -iname "*" |sort > ../filelist.txt
+		popd
+	popd
+popd

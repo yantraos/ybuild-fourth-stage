@@ -1,0 +1,67 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+PKGNAME="tinyxml2"
+TARNAME="$PKGNAME"
+VERSION="5.0.1"
+BUILD=1
+SECTION="LIBS"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/LIBS/${TARBALL}" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		#thx to slackbuilds.org for this
+		#https://slackbuilds.org/slackbuilds/14.2/libraries/tinyxml2/tinyxml2.SlackBuild
+		# Fix end-of-inline encoding.
+		for i in *.cpp *.h
+		do
+			sed -e 's/\r//' $i > ${i}.new
+			touch -r $i ${i}.new
+			mv ${i}.new $i
+		done
+
+		# Fix Cmake install directory.
+		sed -i "s|lib/cmake|lib${LIBDIRSUFFIX}/cmake|" CMakeLists.txt
+
+		mkdir build||true
+		cd  build
+		cmake -G "Unix Makefiles"  -DCMAKE_INSTALL_PREFIX=/usr $CMAKELIBDIRSUFFIX $CMAKEUSEQT5 $CMAKEPREFIXPATH -DCMAKE_BUILD_TYPE=Release ..
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

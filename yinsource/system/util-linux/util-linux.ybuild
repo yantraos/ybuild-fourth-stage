@@ -1,0 +1,69 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+PKGNAME="util-linux"
+TARNAME="$PKGNAME"
+VERSION="2.34"
+BUILD=${BUILD:-1}
+SECTION="SYSTEM"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.xz"
+
+DOWHAT=${1:-"build"}
+
+BUILDSTATIC="--disable-static"
+if [ "X$ENABLESTATIC" != "X" ];then
+	BUILDSTATIC="--disable-all-programs --enable-libuuid --enable-libblkid --enable-libmount --enable-libsmartcols --enable-libfdisk --enable-static --disable-shared"
+	PKGNAME="util-linux-static"
+fi
+
+PKG="${OUTPUT}/${PKGNAME}"
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+CWD=$(pwd)
+scriptLog "${PKGNAME}-${VERSION}"
+
+USESYSTEMD=${USESYSTEMD:-0}
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		if [ $USESYSTEMD -eq 0 ];then
+			SYSTEMDOPTS=" --without-systemd --without-systemdsystemunitdir"
+		else
+			rm -vf /usr/include/{blkid,libmount,uuid}||true
+		fi
+		mkdir -pv $PKG/var/lib/hwclock
+		CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure ADJTIME_PATH=/var/lib/hwclock/adjtime --docdir=/usr/share/doc/${PKGNAME}-${VERSION} --disable-chfn-chsh --disable-login --disable-nologin --disable-su --disable-setpriv --disable-runuser --disable-pylibmount --without-python $SYSTEMDOPTS $BUILDSTATIC
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+		if [ "X$ENABLESTATIC" != "X" ];then
+			rm -rf $PKG/var/ $PKG/usr/share $PKG/usr/bin $PKG/usr/sbin $PKG/usr/include $PKG/bin $PKG/sbin $PKG/usr/lib/pkgconfig/
+		fi
+	popd
+
+	checketc "$PKG"
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

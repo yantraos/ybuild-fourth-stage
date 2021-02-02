@@ -1,0 +1,50 @@
+#!/bin/bash -e
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+RED='\e[1;31m'
+GREEN='\e[1;32m'
+BLACK='\e[0;30m'
+NORMAL='\e[0;0m'
+
+#SPINNER="-\|/"
+
+declare -a DEPENDSON
+
+if [ -e ../yinscripts/SystemData.local ];then
+	. ../yinscripts/SystemData.local
+else
+	echo "No SystemData file found ..."
+	exit 1
+fi
+
+(cd ../yinscripts;./ShowSystemData)||true
+
+if [ "X$1" = "X" ];then
+	echo "Need package name ..."
+	exit 1
+fi
+
+stripVar ()
+{
+	echo -e "$1"|sed -r "s/\x1b\[[0-9;]*m?//g;s/^ *//;s/ *$//"|tr -d '\n\r\t'
+}
+
+readarray DEPENDSON < <(yaps --nocolour -R $yantra -F $1)
+
+echo -e "\r${GREEN}Finding packages needing to be installed ...${NORMAL}"
+echo -e "\r                   "
+
+for ((j=0;j<${#DEPENDSON[@]};j++))
+	do
+		#echo -en "\r${SPINNER:$(($j % 4)):1}"
+		if [ "X${DEPENDSON[j]//[$'\t\r\n ']}" = "Xavailable" ];then
+			yaps --nocolour -R $yantra -F $1
+			exit 0
+		fi
+		PACKAGE=$(stripVar "${DEPENDSON[j]}")
+		if ! yaps -R $yantra "${PACKAGE%-?*}" &>/dev/null;then
+			echo "$PACKAGE"
+		fi
+	done
+	

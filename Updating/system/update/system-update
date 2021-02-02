@@ -1,0 +1,37 @@
+#!/bin/bash -e
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+cd /yinsource/system/linuxheaders
+linuxheaders.ybuild up
+	
+cd /ybuild/yinsource/system/glibc
+glibc.ybuild up
+
+cd /ybuild/yinsource/system/binutils
+binutils.ybuild up
+
+cd /ybuild/yinsource/system/coreutils
+coreutils.ybuild up
+
+cd /ybuild/yinsource/system/util-linux
+util-linux.ybuild up
+
+cd /ybuild/yinsource/system/gmp
+gmp.ybuild up
+
+cd /ybuild/yinsource/system/mpfr
+mpfr.ybuild up
+
+cd /ybuild/yinsource/system/mpc
+mpc.ybuild up
+
+cd /ybuild/yinsource/system/gcc
+gcc.ybuild up
+
+cd /ybuild/yinsource/kernel
+kernel.ybuild up
+firmware.ybuild up
+
+
+

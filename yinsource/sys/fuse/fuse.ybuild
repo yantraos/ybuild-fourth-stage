@@ -1,0 +1,68 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+PKGNAME="fuse"
+TARNAME="$PKGNAME"
+VERSION="3.6.2"
+BUILD=${BUILD:-1}
+SECTION="SYS"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.xz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/SYS/${TARBALL}" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		sed -i '/^udev/,$ s/^/#/' util/meson.build
+		mkdir build
+		cd build
+
+		CFLAGS="$yflags" CXXFLAGS="$yflags" meson --prefix=/usr ..
+		ninja|| exit 100
+		DESTDIR=$PKG ninja install|| exit 100
+
+		mkdir -vp $PKG/lib${LIBDIRSUFFIX} $PKG/bin $PKG/sbin $PKG/usr/share/doc $PKG/usr/share/man/man{1,8}||true
+		mv -v $PKG/usr/lib${LIBDIRSUFFIX}/libfuse3.so.3* $PKG/lib${LIBDIRSUFFIX}
+		ln -sfv ../../lib${LIBDIRSUFFIX}/libfuse3.so.${VERSION} $PKG/usr/lib${LIBDIRSUFFIX}/libfuse3.so
+
+		mv -vf $PKG/usr/bin/fusermount3 $PKG/bin
+		mv -vf $PKG/usr/sbin/mount.fuse3 $PKG/sbin
+		chmod u+s $PKG/bin/fusermount3
+
+		install -v -m755 -d $PKG/usr/share/doc/${PKGNAME}-${VERSION}
+		install -v -m644 ../doc/{README.NFS,kernel.txt} $PKG/usr/share/doc/${PKGNAME}-${VERSION}
+		cp -Rv ../doc/html  $PKG/usr/share/doc/${PKGNAME}-${VERSION}
+	popd
+
+	checketc $PKG
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true

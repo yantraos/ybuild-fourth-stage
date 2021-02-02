@@ -1,0 +1,10 @@
+#!/bin/bash -e
+
+#©ACSESTESCH  raj.atmakuri@acsestech.com
+
+. /usr/share/yinstal/yapi
+
+UIDGIDPAIR=$(findnextpair "system")
+groupadd -g $UIDGIDPAIR atd||true
+useradd -d /dev/null -c "atd daemon" -g atd -s /bin/false -u $UIDGIDPAIR atd||true
+mkdir -vp /var/spool/cron||true

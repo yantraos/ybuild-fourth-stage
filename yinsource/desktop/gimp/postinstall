@@ -1,0 +1,6 @@
+#!/bin/bash -e
+
+#©ACSESTECH raj.atmakuri@acsestech.com
+
+gtk-update-icon-cache -qtf /usr/share/icons/hicolor||true
+update-desktop-database -q||true

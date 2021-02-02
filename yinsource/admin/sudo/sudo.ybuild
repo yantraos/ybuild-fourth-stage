@@ -1,0 +1,55 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+PKGNAME="sudo"
+TARNAME="$PKGNAME"
+VERSION="1.8.27"
+MINORREVISION=""
+BUILD=${BUILD:-1}
+SECTION="ADMIN"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}${MINORREVISION}.tar.gz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar http://35.154.131.43/ysarchives/9.0/ADMIN/${TARBALL}" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}${MINORREVISION}"
+		CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure --prefix=/usr --libexecdir=/usr/lib${LIBDIRSUFFX} --docdir=/usr/share/doc/${PKGNAME}-${VERSION}${MINORREVISION} --with-all-insults --with-env-editor --with-passprompt="[sudo] password for %p" --with-secure-path --with-env-editor --without-pam
+		make $MAKEFLAGS||make|| exit 100
+		make install DESTDIR=$PKG || exit 100
+		mkdir -p $PKG/usr/lib${LIBDIRSUFFX}/sudo ||true
+		ln -sfv libsudo_util.so.0.0.0 $PKG/usr/lib${LIBDIRSUFFX}/sudo/libsudo_util.so.0
+	popd
+
+	checketc $PKG
+	packageclean "$PKG" "$CWD"
+
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+
+	rm -r "$PKG" "${TARNAME}-${VERSION}${MINORREVISION}"
+popd 2>/dev/null||true

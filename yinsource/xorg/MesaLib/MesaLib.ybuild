@@ -1,0 +1,106 @@
+#!/bin/bash -e
+
+. /usr/share/yinstal/yapi
+
+DEPENDS="xorg-libs-9.0 libdrm-2.4.99 Python-2.7.16 Mako-1.1.0 libvdpau-1.2 LLVM-8.0.1"
+if ! yaps -B "$DEPENDS";then
+	exit 100
+fi
+
+PKGNAME="MesaLib"
+TARNAME="mesa"
+VERSION="20.1.10"
+BUILD=${BUILD:-1}
+SECTION="XORG"
+SUFFIX="YAPS"
+TARBALL="${TARNAME}-${VERSION}.tar.xz"
+PKG="${OUTPUT}/${PKGNAME}"
+DOWHAT=${1:-"build"}
+CWD=$(pwd)
+
+scriptLog "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/9.0/XORG/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/9.0/XORG/mesa-20.1.5-add_xdemos-1.patch" $SECTION
+rm -rf "$PKG" || true
+mkdir -p "$PKG"
+
+pushd $COMPILEAT 2>/dev/null||true
+	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
+	pushd "${TARNAME}-${VERSION}"
+		patch -p1 -i ${CWD}/0001-Rip-out-VC4-forced-NEON.patch
+		patch -Np1 -i "${SOURCEARCHIVES}/${SECTION}/mesa-20.1.5-add_xdemos-1.patch"
+		GALLIUM="r300,r600,radeonsi,freedreno,nouveau,swrast,virgl,zink,etnaviv,kmsro,lima,panfrost,tegra,v3d,vc4"
+		MESON_OPT="-D asm=false"
+		rm -rf build||true
+		mkdir build||true
+		if [[ $PIBUILD -eq 1 ]];then
+			cd build
+			DRI_DRIVERS="r100,r200,nouveau"
+			GALLIUM_DRV="vc4,v3d,kmsro,swrast"
+			PLATFORMS="x11,surfaceless,drm"
+			meson --prefix=/usr \
+			-Dbuildtype=release \
+			-Ddri-drivers=$DRI_DRIVERS \
+			-Dgallium-drivers=$GALLIUM_DRV \
+			-Dgallium-nine=false \
+			-Dvalgrind=false \
+			-Dplatforms=$PLATFORMS \
+			-Dopengl=true \
+			-Dgles2=true \
+			-Dgles1=true \
+			-Dgbm=true \
+			-Dglx-direct=true \
+			-Dllvm=true \
+			-Degl=true \
+			-Dglx=dri \
+			-Dvulkan-drivers="auto" \
+			-Ddri3=true \
+			-Dgallium-extra-hud=true \
+			-Dgallium-xa=false \
+			-Dgallium-xvmc=false \
+			-Dlibunwind=false \
+			-Dosmesa=gallium \
+			-Dshared-glapi=true \
+    		$MESON_OPT ..
+		else
+			cd build
+			DRI_DRIVERS="i965,nouveau"
+			GALLIUM_DRV="i915,nouveau,r600,radeonsi,svga,swrast,virgl"
+			PLATFORMS=${PLATFORMS:-"x11,surfaceless,drm"}
+			meson --prefix=$XORG_PREFIX -Dbuildtype=release -Ddri-drivers=$DRI_DRIVERS -Dgallium-drivers=$GALLIUM_DRV -Dgallium-nine=false -Dglx=dri -Dosmesa=gallium -Dvalgrind=false -Dplatforms=$PLATFORMS ..
+		fi
+
+		ninja -j3||ninja -j1||exit 100
+		DESTDIR=$PKG ninja install||exit 100
+		install -v -dm755 $PKG/usr/share/doc/${TARNAME}-${VERSION}
+		cp -rfv ../docs/* $PKG/usr/share/doc/${TARNAME}-${VERSION}
+		unset GALLIUM_DRV DRI_DRIVERS
+	popd
+	
+	checketc $PKG
+	packageclean "$PKG"
+	
+	pushd "$PKG"
+		yaps -n "$PKGNAME" -p "$VERSION" -d $SECTION -b $BUILD -s $SUFFIX -m
+	popd
+	
+	case $DOWHAT in
+		up*)
+			yaps "^${PKGNAME}-[0-9][0-9]*" "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -u
+			;;
+		"install")
+			yaps "${PKGARCHIVES}/${SECTION}/${PKGNAME}-${VERSION}-${BUILD}_${SECTION}_${SUFFIX}.tar.gz" -i
+			;;
+		"build")
+			echo "Just built"
+			;;
+		*)
+			echo "*** Unknown command ***"
+			exit 1
+	esac
+	
+	rm -r "$PKG" "${TARNAME}-${VERSION}"
+popd 2>/dev/null||true
+
+
+

@@ -1,0 +1,373 @@
+
+1)
+
+#It will be assumed that your LFS partition is mounted on /mnt/LFS (/mnt/yantra), using /dev/sda1 and /dev/sda2 as swap, alter as needed.
+#Use sudo where necessary to create links etc.
+
+#If compiling on raspberian you need to install some extra files like so:
+apt-get update
+apt-get install bison gawk m4 texinfo
+#Also make sure /bin/sh points to /bin/bash
+
+#Get the build scripts and helper scripts from:
+#https://github.com/KeithDHedger/yinstalBuilds
+#either via git clone or downloading the zip file and unpacking it.
+#you should place the yinstalBuildScripts and yinscripts folder in the root of what will be your new LFS eg /mnt/lfs/yinstalBuildScripts
+
+#Set some env vars to make it easier to copy and paste these instructions.
+#Folders should be pre created, change paths to suit,
+LFS=/mnt/LFS  (yantra=/mnt/yantra)
+yversion=9.0 (yversion=1.0)
+SOURCEARCHIVES=/ysarchives/$yversion (/ysarchives/$yversion)
+BUILTPACKAGES=/ybpackages/$yversion (/ybpackages/$yversion)
+EXTFOLDER=
+KERNELVERSION=5.2.8
+USESYSTEMD=1
+
+export LFS (yantra)
+export yversion (yversion)
+export SOURCEARCHIVES
+export BUILTPACKAGES
+export EXTFOLDER
+export KERNELVERSION
+export USESYSTEMD
+###RECOMMENDED####
+#or cd into the mounted partition wher you intend to build LFS:
+#LFS should point to your mounted LFS partition ( eg LFS=/mnt/LFS ).
+cd $yantra ($yantra)
+[sudo] git clone https://github.com/KeithDHedger/yinstalBuilds.git  (git clone https://github.com/yantraos/yinstal/blob/master/yinstal.zip)
+
+Own the files:
+[sudo] chown -R $USER:$USER $yantra/yinstalBuilds ($yantra/ybuild)
+[sudo] ln -sv yinstalBuilds/yinstalBuildScripts $yantra/yinstalBuildScripts (ybuild/yinsource $yantra/yinsource)
+[sudo] ln -sv yinstalBuilds/yinscripts $yantra/yinscripts (ybuild/yinscripts $yantra/yinscripts)
+
+3)
+#cd into the lfsscripts folder
+cd yinscripts (yinscripts)
+#Set up config files !!IMPORTANT!!
+#You can just press 'Return' to accept the default.
+#Run:
+[sudo] -E ./LFSSetUp (ysetup)
+
+#To check config:
+./ShowSystemData
+
+4)
+#Run BuildTools script:
+./BuildTools-SystemD
+
+4.5)
+#Mount bind external folder if set and if not already mounted.
+. ./SystemData
+mkdir -vp ${LFS}/${SOURCEARCHIVES}||true  (${yantra}/${SOURCEARCHIVES})
+mkdir -vp ${LFS}/${BUILTPACKAGES}||true (${yantra}/${BUILTPACKAGES})
+if [ "X$EXTFOLDER" != "X" ];then
+	sudo mount --bind $EXTFOLDER/${BUILTPACKAGES} $yantra/${BUILTPACKAGES} ($yantra/${BUILTPACKAGES})
+	sudo mount --bind $EXTFOLDER/${SOURCEARCHIVES} $yantra/${SOURCEARCHIVES} ($yantra/${SOURCEARCHIVES})
+fi
+
+5)
+#Run BuildFileSystem script:
+[sudo] ./BuildFileSystem-SystemD
+
+5.2)
+#You may/will have to re-own/set perms the various folders etc, so:
+[sudo] chown -R $USER:$USER $yantra/yinstalBuilds $yantra/ysarchives/$yversion $yantra/ybpackages/$yversion
+							($yantra/ybuild $yantra/ysarchives/$yversion $yantra/ybpackages/$yversion)
+chmod -R 755 $yantra/ysarchives/$yversion $yantra/ybpackages/$yversion
+							($yantra/ysrchives/$yversion $yantra/ybpackages/$yversion)
+
+5.5)
+#Create a link from downloaded linux tarball to /ysarchives/$yversion/KERNEL to prevent re-downloading source tarball.
+mkdir  $yantra/ysarchives/$yversion/KERNEL ($yantra/ysarchives/$yversion/KERNEL)
+cd $yantra/ysarchives/$yversion/KERNEL ($yantra/ysarchives/$yversion/KERNEL)
+ln -sv ../SYSTEM/linux-$KERNELVERSION.tar.xz .
+
+5.6)
+#get the package manager archive via the host system:
+cd $yantra/yinstalBuildScripts/admin/yinstal  ($yantra/yinsource/admin/yinstal)
+wget -c --no-check-certificate "https://github.com/KeithDHedger/yinstal/archive/master.zip" -O yinstal.zip
+unzip yinstal.zip  (yinstal.zip)
+
+6)
+#Change back to $yantra/yinscripts folder.
+cd $yantra/yinscripts  ($yantra/yinscripts)
+
+#If you are building over ssh you may want to start a screen session that you can come back to later.
+screen
+
+#Chroot into temporary system:
+[sudo] ./Chroot system
+
+7)
+#You should now be in the chroot
+#First install lfspkg:
+cd /yinstalBuildScripts/admin/yinstal   (/yinsource/admin/yinstal)
+BOOTSTRAP=1 ./yinstal.ybuild install  (./yinstal.ybuild install)
+
+#As part of the LFSSetUp script $yantra/root/.ypkg.rc ($yantra/root/.yaps.rc) has been created to contain basic info needed by lfspkg, review and change if needed.
+#Set $yantra/etc/ypkg.rc ($yantra/etc/yaps.rc) variables, make sure the SOURCEARCHIVES points to the same place as $SOURCEARCHIVES from #SystemData.local as that's where the main LFS system source files are, you can do this either from in the chroot environment or from the host with root permissions.
+#At this point wget/openssl is not installed so you will get a load of complaints from lfspkg, ignore them as lfspkg will be reinstalled later with the main system.
+
+#You should run lfspkg --setup to create the ypkg.rc file ( in /etc ) 
+#Rc files are sourced from /etc/ypkg.rc
+#lfspkg --setup can be run again later if you need/want to change source/build folders etc.
+#For building the main system you should probably set the configure options config files in /etc and log options.
+lfspkg --setup   (yaps --setup)
+
+8)
+#Build main system:
+cd /yinstalBuildScripts/system/system-meta (/yinsource/system/system-meta)
+
+#LFSSetUp will have created a symlink to your desired init type so use:
+./system-meta.ybuild install  (./system-meta.ybuild install)
+
+#Or if you have changed your mind you can install a different init system like so:
+
+#Use system-sysvinit-meta for standard sysvinit like so:
+./system-sysvinit-meta.ybuild install  (./system-sysvinit-meta.ybuild install)
+
+#Or use system-bbinit-meta.ybuildfor a busy box init system ( non standard ) like so:
+./system-bbinit-meta.ybuild install (./system-bbinit-meta.ybuild install)
+
+#Or for ##experimental## custom init system use:
+./system-yinit-meta.ybuild install   (./system-yinit-meta.ybuild install)
+
+#Or for rpi sysvinit system use:
+./system-pi-sysvinit-meta.ybuild install  (./system-pi-sysvinit-meta.ybuild install)
+
+Wait for script to complete:
+...
+Have coffee
+Walk the dog
+...
+
+9)
+#logout from temporary system:
+exit
+
+10)
+#Remove tools folder link from host and if you want to save tools archive for futre use move/copy the ${LFS}/tools-${yversion}.tar.gz (${yantra}/tools-${yversion}.tar.gz) somewhere safe:
+[sudo] rm /tools
+#Remove the tools folder from your LFS install disk:
+[sudo] rm -rf $yantra/tools   ($yantra/tools)
+
+11)
+#Re-enter the chroot ( this time and subsequent times don't use the 'system' argument to Chroot ):
+[sudo] ./Chroot
+
+12)
+#You MUST rebuild lfspkg after completeing the the basic system and removing the tools folder.
+#Use same process as 2)/7) EXCEPT do NOT use BOOTSTRAP=1
+#If you have set any vairiable in /etc/ypkg.rc then reply 'R' ( without the quotes ) when asked about replacing files in /etc.
+#If you forgot to do the above bit just re-edit /etc/ypkg.rc:
+
+cd /yinstalBuildScripts/admin/yinstal  (/yinsource/admin/yinstal)
+./yinstal.ybuild install (./yinstal.ybuild install)
+
+#You may want to rerun lfspkg --setup
+
+13)
+#Configure and build the kernel:
+cd /yinstalBuildScripts/kernel (/yinsource/kernel)
+
+#Optional copy the config for the running kernel, don't do this if running from bootcd
+#gunzip < /proc/config.gz > config-${KERNELVERSION}
+
+./kernel.ybuild install   (./kernel.ybuild install)
+
+#You may prefer to manually copy all firmware modules from the host sytem from /lib/firmware to your new LFS system.
+#Or use the firmware build script to install all the latest firmware from https://git.kernel.org/ eg Whilst still in the kernel build folder:
+./firmware.ybuild install (./firmware.ybuild install)
+
+#Install any extra hardware/firmware packages you need ( you may have to boot into the 'real' system for this ).
+#eg usb wireless package:
+cd /yinstalBuildScripts/hware/RTL88x2BU-Linux-Driver  (/yinsource/hware/RTL88x2BU-Linux-Driver)
+./RTL88x2BU-Linux-Driver.ybuild install  (./RTL88x2BU-Linux-Driver.ybuild install)
+
+13.2)
+#You may want to set up wifi now so:
+cd /yinstalBuildScripts/net/wpa-supplicant/   (/yinsource/net/wpa-supplicant/)
+./wpa-supplicant.ybuild install   (./wpa-supplicant.ybuild install)
+#configure
+mkdir -vp /etc/wpa_supplicant/
+wpa_passphrase SSID SECRET_PASSWORD > /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
+#Set the country code:
+sed -i '1s/^/country=GB\n/' /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
+
+#Don't forget to set up wifi config.
+#A basic config is installed to /etc/systemd/network/10-wifi-static.network based on details entered earlier.
+#you may have to change some details depending on your hardware.
+#Change MACAddress, Name etc to suit.
+#you may have to run:
+systemctl enable wpa_supplicant@wlan0
+systemctl start wpa_supplicant@wlan0
+#manually from within the 'real' system.
+ 
+13.5)
+#Optional install of grub, see here:
+#http://www.linuxfromscratch.org/lfs/view/stable/chapter08/grub.html
+
+#The ysetup script will install a basic grub.cfg file in ${LFS}/${BUILDSCRIPTS}/system/grub/ (${yantra}/${BUILDSCRIPTS}/system/grub/)based on the details given to the script.
+#Check that the grub.cfg file is OK, make any changes and just copy it to /boot/grub, or manually do this:
+
+#assuming root device is /dev/sda and LFS system is on /dev/sda1:
+grub-install /dev/sda
+
+cat > /boot/grub/grub.cfg << "EOF"
+# Begin /boot/grub/grub.cfg
+set default=0
+set timeout=30
+
+insmod ext2
+set root=(hd0,1)
+
+menuentry "GNU/Linux, Linux $yversion" {   ("Yantra, Version $yversion")
+	linux /boot/vmlinuz-$KERNELVERSION root=/dev/sda1 ro
+}
+EOF
+
+14)
+#Before building the X server now is a good time to quickly boot into your new system and make sure all is OK, you can then reboot back to the host and continue building in the chroot or build in the 'real' system, the choice is yours but this HowTo assumes all building is done in the chroot.
+#Build xorg:
+cd /yinstalBuildScripts/xorg/xorg-meta/  (/yinsource/xorg/xorg-meta/)
+./xorg-meta.ybuild install           (./xorg-meta.ybuild install)
+
+15)
+#Install documentation stuff
+#Also installs python via dependency
+#Loads of apps need these for building documentation so might as well install now.
+cd /yinstalBuildScripts/devel/gtk-doc  (/yinsource/devel/gtk-doc)
+./gtk-doc.ybuild install            (./gtk-doc.ybuild install)
+
+cd /yinstalBuildScripts/devel/doxygen  (/yinsource/devel/doxygen)
+./doxygen.ybuild install            (./doxygen.ybuild install)
+
+16)
+#Install cups and gtk.
+#Gtk2 has a 'soft' dependency on cups so best to buils cups first.
+cd /yinstalBuildScripts/print/cups     (/yinsource/print/cups)
+./cups.ybuild install				  (./cups.ybuild install)
+
+cd /yinstalBuildScripts/gtk/gtk        (/yinsource/gtk/gtk)
+./gtk.ybuild install				  (./gtk.ybuild install)
+
+#xsane frontends and xsane require gimp installed first to build the plugin
+cd /yinstalBuildScripts/desktop/gimp		(/yinsource/desktop/gimp)
+./gimp.ybuild install					(./gimp.ybuild install)
+
+#rest of printing stuff
+cd /yinstalBuildScripts/print/printing-meta	(/yinsource/print/printing-meta)
+./printing-meta.ybuild install			(./printing-meta.ybuild install)
+
+16.5)
+#multi media
+cd /yinstalBuildScripts/mm/mm-meta			(/yinsource/mm/mm-meta)
+./mm-meta.ybuild install					(./mm-meta.ybuild install)
+
+17)
+#Development stuff
+cd /yinstalBuildScripts/devel/development-meta	(/yinsource/devel/development-meta)
+./development-meta.ybuild install				(./development-meta.ybuild install)
+
+18)
+#The big one! build a complete desktop
+#this meta packagage includes other meta packages and takes a LOOOooooonnnnggggg time to build!
+#this is for an xfce4 desktop.
+cd /yinstalBuildScripts/desktop/desktop-meta		(/yinsource/desktop/desktop-meta)
+./desktop-meta.ybuild install					(./desktop-meta.ybuild install)
+
+#Or for an ydesktop
+cd /yinstalBuildScripts/ydesktop/ydesktop-meta	(/yinsource/ydesktop/ydesktop-meta)
+./ydesktop-meta.ybuild install					(./ydesktop-meta.ybuild install)
+
+19)
+#Extra odd stuff
+#Chromium
+cd /yinstalBuildScripts/desktop/chromium			(/yinsource/desktop/chromium)
+./chromium.ybuild install						(./chromium.ybuild install)
+#falkon
+cd /yinstalBuildScripts/qt/falkon/				(/yinsource/qt/falkon/)
+./falkon.ybuild install						(./falkon.ybuild install)
+
+#Cairo-dock-plugins pulls in cairo-dock as a dependency
+cd /yinstalBuildScripts/desktop/cairo-dock-plugins	(/yinsource/desktop/cairo-dock-plugins)
+./cairo-dock-plugins.ybuild install				(./cairo-dock-plugins.ybuild install)
+
+#Qemu builds both static and dynamically linked versions
+cd /yinstalBuildScripts/hware/qemu				(/yinsource/hware/qemu)
+./qemu.ybuild install							(./qemu.ybuild install)
+
+#Seamonkey for web dev
+cd /yinstalBuildScripts/net/seamonkey			(/yinsource/net/seamonkey)
+./seamonkey.ybuild install					(./seamonkey.ybuild install)
+
+#Icedtea-web BROKEN
+#cd /yinstalBuildScripts/net/icedtea-web			(/yinsource/net/icedtea-web)
+#./icedtea-web.ybuild install					(./icedtea-web.ybuild install)
+#For pulse audio
+#cd /yinstalBuildScripts/net/icedtea-sound		(/yinsource/net/icedtea-sound)
+#./icedtea-sound.ybuild install				(./icedtea-sound.ybuild install)
+
+#Samba
+cd /yinstalBuildScripts/net/samba				(/yinsource/net/samba)
+./samba.ybuild install						(./samba.ybuild install)
+
+#Fuse and stuff
+cd /yinstalBuildScripts/net/sshfs				(/yinsource/net/sshfs)
+./sshfs.ybuild install						(./sshfs.ybuild install)
+
+cd /yinstalBuildScripts/net/davfs2				(/yinsource/net/davfs2)
+./davfs2.ybuild install						(./davfs2.ybuild install)
+
+cd /yinstalBuildScripts/net/curlftpfs			(/yinsource/net/curlftpfs)
+./curlftpfs.ybuild install					(./curlftpfs.ybuild install)
+
+#System admin/security stuff
+cd /yinstalBuildScripts/admin/logrotate			(/yinsource/admin/logrotate)
+./logrotate.ybuild install					(./logrotate.ybuild install)
+
+cd /yinstalBuildScripts/admin/fcron				(/yinsource/admin/fcron)
+./fcron.ybuild install						(./fcron.ybuild install)
+
+cd /yinstalBuildScripts/net/iptables				(/yinsource/net/iptables)
+./iptables.ybuild install						(./iptables.ybuild install)
+
+cd /yinstalBuildScripts/net/fail2ban				(/yinsource/net/fail2ban)
+./fail2ban.ybuild install						(./fail2ban.ybuild install)
+
+
+#TODO
+cd /yinstalBuildScripts/qt/qt-creator			(/yinsource/qt/qt-creator)
+./qt-creator.ybuild install					(./qt-creator.ybuild install)
+
+#If you are building in chroot you will pobably have to rerun the postinstall script for this package AFTER booting to the 'real' system.
+cd /yinstalBuildScripts/admin/mariadb			(/yinsource/admin/mariadb)
+./mariadb.ybuild install						(./mariadb.ybuild install)
+
+#Odd stuff
+cd /yinstalBuildScripts/xorg/xbindkeys			(/yinsource/xorg/xbindkeys)
+./xbindkeys.ybuild install					(./xbindkeys.ybuild install)
+
+cd /yinstalBuildScripts/net/libcddb				(/yinsource/net/libcddb)
+./libcddb.ybuild install						(./libcddb.ybuild install)
+
+cd /yinstalBuildScripts/desktop/epdfview			(/yinsource/desktop/epdfview)
+./epdfview.ybuild install						(./epdfview.ybuild install)
+
+#Conky is getting increasingly tied to gnome and difficult ( impossible! )to build.
+#cd /yinstalBuildScripts/desktop/conky			(/yinsource/desktop/conky)
+#./conky.ybuild install						(./conky.ybuild install)
+
+#Try an alternative!
+cd /yinstalBuildScripts/desktop/gkrellm			(/yinsource/desktop/gkrellm)
+./gkrellm.ybuild install						(./gkrellm.ybuild install)
+
+
+#Add users
+cd /yinstalBuildScripts/HelperScripts/			(/yinsource/HelperScripts/)
+./UsersAndGroups YOURUSERNAME
+
+
+

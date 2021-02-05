@@ -15,7 +15,7 @@ CWD=$(pwd)
 CMAKECFLAGS="-DCMAKE_C_FLAGS="$yflags""
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/LIBS/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/LIBS/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

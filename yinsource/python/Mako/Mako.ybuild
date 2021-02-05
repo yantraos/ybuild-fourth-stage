@@ -18,7 +18,7 @@ PKG="${OUTPUT}/${PKGNAME}"
 DOWHAT=${1:-"build"}
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "https://files.pythonhosted.org/packages/source/M/Mako/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/PYTHON/${TARBALL}" $SECTION
 
 rm -rf "$PKG" || true
 mkdir -p "$PKG"

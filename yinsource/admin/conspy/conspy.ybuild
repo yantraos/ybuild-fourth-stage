@@ -14,7 +14,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/SYS/${PKGNAME}/${PKGNAME}-${VERSION}-1/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/SYS/${PKGNAME}/${PKGNAME}-${VERSION}-1/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

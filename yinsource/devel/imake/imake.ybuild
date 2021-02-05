@@ -16,7 +16,7 @@ SUFFIX="YAPS"
 TARBALL="${TARNAME}-${VERSION}.tar.gz"
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/DEVEL/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/DEVEL/${TARBALL}" $SECTION
 
 PKG="${OUTPUT}/${PKGNAME}"
 

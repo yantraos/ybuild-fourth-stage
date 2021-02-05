@@ -1,4 +1,4 @@
-yversion=9.0
+yversion=1.0
 LIBDIRSUFFIX=${LIBDIRSUFFIX:-""}
 OUTPUT=${OUTPUT:-/ybpackages/${yversion}}
 SOURCEARCHIVES=${SOURCEARCHIVES:-/ysarchives/${yversion}}

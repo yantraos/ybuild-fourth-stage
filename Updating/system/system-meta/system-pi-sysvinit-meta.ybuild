@@ -101,7 +101,7 @@ if ! yaps -B "$DEPENDS";then
 fi
 
 PKGNAME="system-meta"
-VERSION="9.0"
+VERSION="1.0"
 BUILD=${BUILD:-1}
 SECTION="SYSTEM"
 SUFFIX="YAPS"

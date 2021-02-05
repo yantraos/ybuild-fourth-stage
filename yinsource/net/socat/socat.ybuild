@@ -4,7 +4,7 @@
 
 PKGNAME="socat"
 TARNAME="$PKGNAME"
-VERSION="1.7.3.3"
+VERSION="1.7.3.4"
 BUILD=1
 SECTION="NET"
 SUFFIX="YAPS"
@@ -14,7 +14,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://www.dest-unreach.org/socat/download/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

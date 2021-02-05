@@ -20,7 +20,7 @@ CWD=$(pwd)
 OPTIONS=${OPTIONS:-"--with-glib=yes"}
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/SYS/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/SYS/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

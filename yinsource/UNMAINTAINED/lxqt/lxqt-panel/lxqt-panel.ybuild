@@ -2,14 +2,14 @@
 
 . /usr/share/yinstal/yapi
 
-DEPENDS="libqtxdg-git-1.1.0 liblxqt-git-0.9.0 liblxqt-mount-git-0.9.0 lxqt-globalkeys-git-0.9.0 kguiaddons-5.7.0 solid-5.7.0 libdbusmenu-qt5-0.9.3"
+DEPENDS="libqtxdg-git-1.1.0 liblxqt-git-0.1.0 liblxqt-mount-git-0.1.0 lxqt-globalkeys-git-0.1.0 kguiaddons-5.7.0 solid-5.7.0 libdbusmenu-qt5-0.9.3"
 if ! yaps -B "$DEPENDS";then
 	exit 100
 fi
 
 PKGNAME="lxqt-panel-git"
 BASEPKGNAME="lxqt-panel"
-VERSION="0.9.0"
+VERSION="0.1.0"
 BUILD=${BUILD:-1}
 SECTION="LXQT"
 SUFFIX="YAPS"

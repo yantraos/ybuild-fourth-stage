@@ -2,7 +2,7 @@
 
 . /usr/share/yinstal/yapi
 
-DEPENDS="xorg-libs-9.0 OpenJPEG-2.3.1"
+DEPENDS="xorg-libs-1.0 OpenJPEG-2.3.1"
 if ! yaps -B "$DEPENDS";then
 	exit 100
 fi
@@ -19,8 +19,8 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/PRINT/${TARBALL}" $SECTION
-gettar "http://35.154.131.43/ysarchives/9.0/PRINT/${PKGNAME}-${VERSION}-shared_libs-1.patch" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/PRINT/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/PRINT/${PKGNAME}-${VERSION}-shared_libs-1.patch" $SECTION
 
 rm -rf "$PKG" || true
 mkdir -p "$PKG"

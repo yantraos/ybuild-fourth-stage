@@ -15,7 +15,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/XFCE/Xfwm4CompositeEditor-0.2.1.zip" $SECTION ${TARBALL}
+gettar "http://35.154.131.43/ysarchives/1.0/XFCE/Xfwm4CompositeEditor-0.2.1.zip" $SECTION ${TARBALL}
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

@@ -3,7 +3,7 @@
 . /usr/share/yinstal/yapi
 
 PKGNAME="xorg-meta"
-VERSION="9.0"
+VERSION="1.0"
 BUILD=${BUILD:-1}
 SECTION="XORG"
 SUFFIX="YAPS"
@@ -21,7 +21,7 @@ libXdmcp-1.1.3
 xcb-proto-1.13
 Fontconfig-2.13.1
 libxcb-1.13.1
-xorg-libs-9.0
+xorg-libs-1.0
 xcb-util-0.4.0
 xcb-util-image-0.4.0
 xcb-util-keysyms-0.4.0
@@ -29,14 +29,14 @@ xcb-util-renderutil-0.3.9
 xcb-util-wm-0.4.1
 xcb-util-cursor-0.1.3
 MesaLib-19.1.4
-glu-9.0.1
+glu-1.0.1
 xbitmaps-1.1.2
-x-apps-9.0
+x-apps-1.0
 xcursor-themes-1.0.4
-x-fonts-9.0
+x-fonts-1.0
 xkeyboard-config-2.27
 Xorg-Server-1.20.5
-xorg-drivers-9.0
+xorg-drivers-1.0
 twm-1.0.10
 xterm-348
 xclock-1.0.9

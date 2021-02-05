@@ -19,8 +19,8 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/DEVEL/${TARBALL}" $SECTION
-gettar "http://35.154.131.43/ysarchives/9.0/DEVEL/docbook-dsssl-doc-1.79.tar.bz2" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/DEVEL/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/DEVEL/docbook-dsssl-doc-1.79.tar.bz2" $SECTION
 
 rm -rf "$PKG" || true
 mkdir -p "$PKG"

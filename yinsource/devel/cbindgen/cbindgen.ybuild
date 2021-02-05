@@ -9,7 +9,7 @@ fi
 
 PKGNAME="cbindgen"
 TARNAME="$PKGNAME"
-VERSION="0.9.0"
+VERSION="0.1.0"
 BUILD=1
 SECTION="DEVEL"
 SUFFIX="YAPS"
@@ -19,7 +19,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/DEVEL/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/DEVEL/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

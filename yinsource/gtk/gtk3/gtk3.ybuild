@@ -19,7 +19,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/GTK/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/GTK/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 glib-compile-schemas /usr/share/glib-2.0/schemas

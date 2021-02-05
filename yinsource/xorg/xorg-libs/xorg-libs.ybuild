@@ -8,7 +8,7 @@ if ! yaps -B "$DEPENDS";then
 fi
 
 PKGNAME="xorg-libs"
-VERSION="9.0"
+VERSION="1.0"
 BUILD=${BUILD:-1}
 SECTION="XORG"
 SUFFIX="YAPS"
@@ -61,7 +61,7 @@ dd7e1e946def674e78c0efbc5c7d5b3b  libxkbfile-1.1.0.tar.bz2
 EOF
 
 	pushd "${SOURCEARCHIVES}/${SECTION}/xorg-libs"
-		grep -v '^#' ${PKGNAME}-${VERSION}.md5 | awk '{print $2}' | wget --no-check-certificate -i- -c -B http://35.154.131.43/ysarchives/9.0/XORG/xorg-libs/ -P ${SOURCEARCHIVES}/${SECTION}/xorg-libs
+		grep -v '^#' ${PKGNAME}-${VERSION}.md5 | awk '{print $2}' | wget --no-check-certificate -i- -c -B http://35.154.131.43/ysarchives/1.0/XORG/xorg-libs/ -P ${SOURCEARCHIVES}/${SECTION}/xorg-libs
 		if ! md5sum -c ${PKGNAME}-${VERSION}.md5;then
 			echo "Files don't match ..."
 			exit 1

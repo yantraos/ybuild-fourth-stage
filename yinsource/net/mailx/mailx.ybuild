@@ -19,8 +19,8 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://ftp.debian.org/debian/pool/main/h/heirloom-mailx/${TARBALL}" $SECTION
-gettar "http://www.linuxfromscratch.org/patches/blfs/${yversion}/${TARNAME}-${VERSION}-fixes-1.patch"  $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${TARNAME}-${VERSION}-fixes-1.patch"  $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

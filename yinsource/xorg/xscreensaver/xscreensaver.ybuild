@@ -2,7 +2,7 @@
 
 . /usr/share/yinstal/yapi
 
-DEPENDS="libglade-2.6.4 x-apps-9.0 GLU-9.0.1"
+DEPENDS="libglade-2.6.4 x-apps-1.0 GLU-1.0.1"
 if ! yaps -B "$DEPENDS";then
 	exit 100
 fi
@@ -19,7 +19,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/XORG/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/XORG/${TARBALL}" $SECTION
 #gettar "https://ftp.osuosl.org/pub/blfs/conglomeration/xscreensaver/${TARBALL}" $SECTION
 
 rm -rf "$PKG" || true

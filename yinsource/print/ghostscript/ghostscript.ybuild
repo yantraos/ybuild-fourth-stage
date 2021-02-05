@@ -19,10 +19,10 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/PRINT/${TARBALL}" $SECTION
-gettar "http://35.154.131.43/ysarchives/9.0/PRINT/${PKGNAME}-${VERSION}-upstream_fixes-1.patch" $SECTION
-gettar "http://35.154.131.43/ysarchives/9.0/PRINT/ghostscript-fonts-std-8.11.tar.gz" $SECTION
-gettar "http://35.154.131.43/ysarchives/9.0/PRINT/gnu-gs-fonts-other-6.0.tar.gz" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/PRINT/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/PRINT/${PKGNAME}-${VERSION}-upstream_fixes-1.patch" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/PRINT/ghostscript-fonts-std-8.11.tar.gz" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/PRINT/gnu-gs-fonts-other-6.0.tar.gz" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

@@ -25,7 +25,7 @@ case "$ARCH" in
 esac
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "https://repo.skype.com/latest/skypeforlinux-64.deb" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/skypeforlinux-64.deb" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

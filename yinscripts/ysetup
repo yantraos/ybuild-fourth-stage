@@ -75,7 +75,7 @@ else
 fi
 
 #Yantra Version
-yversion=${yversion:-9.0}
+yversion=${yversion:-1.0}
 readWithDefault "yversion"  "Enter Yantra Version"
 
 #Computer name

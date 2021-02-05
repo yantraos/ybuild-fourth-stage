@@ -18,9 +18,9 @@ CFETARBALL=cfe-${VERSION}.src.tar.xz
 COMPILERTARBALL=compiler-rt-${VERSION}.src.tar.xz
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/XORG/l/${TARBALL}" $SECTION
-gettar "http://35.154.131.43/ysarchives/9.0/XORG/$CFETARBALL" $SECTION
-gettar "http://35.154.131.43/ysarchives/9.0/XORG/$COMPILERTARBALL" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/XORG/l/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/XORG/$CFETARBALL" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/XORG/$COMPILERTARBALL" $SECTION
 
 PKG="${OUTPUT}/${PKGNAME}"
 

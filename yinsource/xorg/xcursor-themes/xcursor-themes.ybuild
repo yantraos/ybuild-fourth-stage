@@ -2,7 +2,7 @@
 
 . /usr/share/yinstal/yapi
 
-DEPENDS="x-apps-9.0"
+DEPENDS="x-apps-1.0"
 if ! yaps -B "$DEPENDS";then
 	exit 100
 fi
@@ -16,7 +16,7 @@ SUFFIX="YAPS"
 TARBALL="${TARNAME}-${VERSION}.tar.bz2"
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/XORG/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/XORG/${TARBALL}" $SECTION
 
 PKG="${OUTPUT}/${PKGNAME}"
 

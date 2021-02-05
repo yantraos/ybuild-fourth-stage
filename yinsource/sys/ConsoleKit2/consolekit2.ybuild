@@ -2,7 +2,7 @@
 
 . /usr/share/yinstal/yapi
 
-DEPENDS="dbus-glib-0.110 xorg-libs-9.0 Polkit-0.116 xmlto-0.0.28"
+DEPENDS="dbus-glib-0.110 xorg-libs-1.0 Polkit-0.116 xmlto-0.0.28"
 if ! yaps -B "$DEPENDS";then
 	exit 100
 fi

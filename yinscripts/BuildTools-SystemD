@@ -39,7 +39,7 @@ echo $ADMINPWD|sudo -S chmod -R 777 $yantra/tools/ 2>/dev/null
 
 cp ./SystemData $SYSTEMSOURCE
 
-WGETTAR="http://35.154.131.43/ysarchives/9.0/NET/wget-$WGET_VERS.tar.gz"
+WGETTAR="http://35.154.131.43/ysarchives/1.0/NET/wget-$WGET_VERS.tar.gz"
 
 set +h
 umask 022
@@ -57,8 +57,8 @@ export yantra LC_ALL LFS_TGT PATH
 export MAKEFLAGS='-j4'
 
 if [ ! -e "${SYSTEMSOURCE}/gotsystem" ];then
-	wget --no-check-certificate http://35.154.131.43/ysarchives/9.0/SYSTEM/$yversion/wget-list
-	wget --no-check-certificate http://35.154.131.43/ysarchives/9.0/SYSTEM/$yversion/md5sums
+	wget --no-check-certificate http://35.154.131.43/ysarchives/1.0/SYSTEM/$yversion/wget-list
+	wget --no-check-certificate http://35.154.131.43/ysarchives/1.0/SYSTEM/$yversion/md5sums
 	sed -i 's/openssl-1.1.1..tar.gz/openssl-1.1.1f.tar.gz/' wget-list
 	sed -i '/openssl-1.1.1..tar.gz/d' md5sums
 	mv md5sums $SYSTEMSOURCE

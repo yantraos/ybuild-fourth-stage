@@ -15,8 +15,8 @@ CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
 #gettar "http://download.icu-project.org/files/icu4c/${VERSION}/${TARBALL}" $SECTION
-gettar "http://35.154.131.43/ysarchives/9.0/SYS/${TARBALL}" $SECTION
-#		http://ftp.osuosl.org/pub/blfs/9.0/i/icu4c-64_2-src.tgz
+gettar "http://35.154.131.43/ysarchives/1.0/SYS/${TARBALL}" $SECTION
+#		http://ftp.osuosl.org/pub/blfs/1.0/i/icu4c-64_2-src.tgz
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

@@ -14,7 +14,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/HWARE/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/HWARE/${TARBALL}" $SECTION
 #https://web.archive.org/web/20150323120731/http://www.directfb.org/downloads/Core/DirectFB-1.7/DirectFB-1.7.0.tar.gz
 #gettar "https://web.archive.org/web/20150323120731/http://www.directfb.org/downloads/Core/DirectFB-1.7/DirectFB-1.7.0.tar.gz" $SECTION
 

@@ -20,7 +20,7 @@ CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
 #gettar "http://ftp.musicbrainz.org/pub/musicbrainz/historical/${TARBALL}" $SECTION
-gettar "http://35.154.131.43/ysarchives/9.0/MM/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/MM/${TARBALL}" $SECTION
 #gettar "http://www.linuxfromscratch.org/patches/blfs/${yversion}/${TARNAME}-${VERSION}-missing-includes-1.patch" $SECTION
 
 rm -rf "$PKG" || true

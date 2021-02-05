@@ -16,7 +16,7 @@ PKG="${OUTPUT}/${PKGNAME}"
 DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
-gettar "http://35.154.131.43/ysarchives/9.0/SYS/" ${SECTION} ${PKGNAME}.zip
+gettar "http://35.154.131.43/ysarchives/1.0/SYS/" ${SECTION} ${PKGNAME}.zip
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

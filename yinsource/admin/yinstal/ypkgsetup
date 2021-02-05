@@ -19,7 +19,7 @@
 # along with BootCD.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-LOCALyversion=9.0
+LOCALyversion=1.0
 PIBUILD=0
 PIVERS=4
 USESYSTEMD=0
@@ -101,7 +101,7 @@ else
 fi
 
 #Yantra Version
-yversion=${yversion:-"9.0"}
+yversion=${yversion:-"1.0"}
 readWithDefault "yversion" "Enter Version"
 
 #use systemd :(

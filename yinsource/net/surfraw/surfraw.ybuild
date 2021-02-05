@@ -14,7 +14,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "https://gitlab.com/surfraw/Surfraw/uploads/2de827b2786ef2fe43b6f07913ca7b7f/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

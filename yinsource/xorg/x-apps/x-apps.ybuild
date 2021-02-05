@@ -8,7 +8,7 @@ if ! yaps -B "$DEPENDS";then
 fi
 
 PKGNAME="x-apps"
-VERSION="9.0"
+VERSION="1.0"
 BUILD=${BUILD:-1}
 SECTION="XORG"
 SUFFIX="YAPS"
@@ -70,7 +70,7 @@ pushd $COMPILEAT 2>/dev/null||true
 EOF
 
 	pushd "${SOURCEARCHIVES}/${SECTION}/x-apps"
-		grep -v '^#' ${PKGNAME}-${VERSION}.md5 | awk '{print $2}' | wget --no-check-certificate -i- -c -B http://35.154.131.43/ysarchives/9.0/XORG/x-apps/ || true
+		grep -v '^#' ${PKGNAME}-${VERSION}.md5 | awk '{print $2}' | wget --no-check-certificate -i- -c -B http://35.154.131.43/ysarchives/1.0/XORG/x-apps/ || true
 		if ! md5sum -c ${PKGNAME}-${VERSION}.md5;then
 			echo "Files don't match ..."
 			exit 1

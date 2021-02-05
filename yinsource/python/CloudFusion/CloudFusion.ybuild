@@ -3,7 +3,7 @@
 . /usr/share/yinstal/yapi
 
 PKGNAME="CloudFusion"
-TARNAME="master"
+TARNAME="CloudFusion"
 VERSION="7.5.13"
 BUILD=${BUILD:-1}
 SECTION="PYTHON"
@@ -14,7 +14,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "https://github.com/joe42/CloudFusion/archive/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/PYTHON/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

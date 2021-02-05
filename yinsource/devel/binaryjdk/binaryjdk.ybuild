@@ -20,10 +20,10 @@ scriptLog "${PKGNAME}-${VERSION}"
 
 case $ARCH in
 	x86_64)
-		gettar "http://35.154.131.43/ysarchives/9.0/DEVEL/openjdk-${VERSION}_linux-x64_bin.tar.gz" $SECTION "${PKGNAME}${TARSUFFIX}"
+		gettar "http://35.154.131.43/ysarchives/1.0/DEVEL/openjdk-${VERSION}_linux-x64_bin.tar.gz" $SECTION "${PKGNAME}${TARSUFFIX}"
 		;;
 	i?86)
-		gettar "http://35.154.131.43/ysarchives/9.0/DEVEL/${TARNAME}-11.0.2${MINORVERSION}-i686-bin.tar.xz" $SECTION "${PKGNAME}${TARSUFFIX}"
+		gettar "http://35.154.131.43/ysarchives/1.0/DEVEL/${TARNAME}-11.0.2${MINORVERSION}-i686-bin.tar.xz" $SECTION "${PKGNAME}${TARSUFFIX}"
 		;;
 	arm*)
 		TARSUFFIX=".tar.gz"

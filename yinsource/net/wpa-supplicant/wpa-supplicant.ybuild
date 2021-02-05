@@ -20,7 +20,7 @@ CWD=$(pwd)
 BUILDGUI=${BUILDGUI:-0}
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "https://w1.fi/releases/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${TARBALL}" $SECTION
 
 rm -rf "$PKG" || true
 mkdir -p "$PKG"

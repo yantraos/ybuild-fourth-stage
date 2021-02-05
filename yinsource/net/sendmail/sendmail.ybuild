@@ -21,7 +21,7 @@ CWD=$(pwd)
 export PKG
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "ftp://ftp.sendmail.org/pub/${PKGNAME}/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -vp "$PKG"
 

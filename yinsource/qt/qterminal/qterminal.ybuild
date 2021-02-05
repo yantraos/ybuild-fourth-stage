@@ -19,7 +19,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "https://github.com/lxqt/${PKGNAME}/releases/download/${VERSION}/${TARBALL}" $SECTION ${TARBALL}
+gettar "http://35.154.131.43/ysarchives/1.0/QT/${TARBALL}" $SECTION ${TARBALL}
 
 rm -rf "$PKG" || true
 mkdir -p "$PKG"

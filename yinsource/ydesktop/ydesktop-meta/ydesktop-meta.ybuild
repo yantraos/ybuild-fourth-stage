@@ -10,12 +10,12 @@ ypanel-0.1.4
 ysetwallpaper-0.1.1
 CliMsg-0.1.1
 dbus-glib-0.110
-compton-9.0
+compton-1.0
 PyCairo-1.18.1
 PyGObject-2.28.7
 PyGTK-2.24.0
 URI-1.76
-printing-meta-9.0
+printing-meta-1.0
 vte1-0.28.2
 libnotify-0.5.2
 startup-notification-0.12

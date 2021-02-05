@@ -18,7 +18,7 @@ apt-get install bison gawk m4 texinfo
 #Set some env vars to make it easier to copy and paste these instructions.
 #Folders should be pre created, change paths to suit,
 LFS=/mnt/LFS  (/mnt/yantra)
-yversion=9.0  (YVERSION)
+yversion=1.0  (YVERSION)
 SOURCEARCHIVES=/ysarchives/$yversion  (/ysarchives/$YVERSION)
 BUILTPACKAGES=/ybpackages/$yversion (/ybpackages/$YVERSION)
 EXTFOLDER=

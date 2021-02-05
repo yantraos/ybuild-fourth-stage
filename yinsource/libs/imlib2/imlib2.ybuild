@@ -4,7 +4,7 @@
 
 . /usr/share/yinstal/yapi
 
-DEPENDS="xorg-libs-9.0 giflib-5.2.1"
+DEPENDS="xorg-libs-1.0 giflib-5.2.1"
 if ! yaps -B "$DEPENDS";then
 	exit 100
 fi
@@ -21,7 +21,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/LIBS/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/LIBS/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

@@ -20,8 +20,8 @@ CWD=$(pwd)
 REVISION=37
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://deb.debian.org/debian/pool/main/w/w3m/${TARBALL}" $SECTION
-gettar "http://deb.debian.org/debian/pool/main/w/w3m/${TARNAME}_${VERSION}-${REVISION}.debian.tar.xz" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${TARNAME}_${VERSION}-${REVISION}.debian.tar.xz" $SECTION
 
 rm -rf "$PKG" || true
 mkdir -p "$PKG"

@@ -22,8 +22,8 @@ ALL_LINGUAS=${ALL_LINGUAS:-"en_GB"}
 export ALL_LINGUAS
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/DESKTOP/${TARBALL}" $SECTION
-gettar "http://35.154.131.43/ysarchives/9.0/DESKTOP/gimp-help-${HELPVERSION}.tar.xz" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/DESKTOP/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/DESKTOP/gimp-help-${HELPVERSION}.tar.xz" $SECTION
 
 rm -rf "$PKG" || true
 mkdir -p "$PKG"

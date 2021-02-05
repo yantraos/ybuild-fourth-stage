@@ -19,8 +19,8 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "https://archive.mozilla.org/pub/security/${PKGNAME}/releases/NSS_3_45_RTM/src/${TARBALL}" $SECTION
-gettar "http://www.linuxfromscratch.org/patches/blfs/$yversion/${TARNAME}-${VERSION}-standalone-1.patch" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${TARNAME}-${VERSION}-standalone-1.patch" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

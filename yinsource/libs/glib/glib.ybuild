@@ -21,8 +21,8 @@ CWD=$(pwd)
 OPTIONS=${OPTIONS:-"-Ddoc=true -Dman=true"}
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/LIBS//${TARBALL}" $SECTION
-gettar "http://35.154.131.43/ysarchives/9.0/LIBS//${TARNAME}-${VERSION}-skip_warnings-1.patch" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/LIBS//${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/LIBS//${TARNAME}-${VERSION}-skip_warnings-1.patch" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

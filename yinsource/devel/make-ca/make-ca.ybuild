@@ -21,7 +21,7 @@ CWD=$(pwd)
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/DEVEL/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/DEVEL/${TARBALL}" $SECTION
 
 pushd $COMPILEAT 2>/dev/null||true
 	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"

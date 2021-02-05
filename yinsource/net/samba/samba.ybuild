@@ -20,7 +20,7 @@ CWD=$(pwd)
 OPTIONS=${OPTIONS:-""}
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://ftp.samba.org/pub/samba/stable/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

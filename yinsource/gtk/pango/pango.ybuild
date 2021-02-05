@@ -2,7 +2,7 @@
 
 . /usr/share/yinstal/yapi
 
-DEPENDS="Fontconfig-2.13.1 Cairo-1.16.0 Harfbuzz-2.6.0 FriBidi-1.0.5 GLib-2.60.6 xorg-libs-9.0"
+DEPENDS="Fontconfig-2.13.1 Cairo-1.16.0 Harfbuzz-2.6.0 FriBidi-1.0.5 GLib-2.60.6 xorg-libs-1.0"
 if ! yaps -B "$DEPENDS";then
 	exit 100
 fi
@@ -23,7 +23,7 @@ if [ "$(yaps -S 5 Fontconfig)" == false ];then
 fi
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/GTK/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/GTK/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

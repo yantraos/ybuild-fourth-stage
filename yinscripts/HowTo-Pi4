@@ -9,7 +9,7 @@ Instructions for Raspberry Pi 4 !ONLY!
 #It will be assumed that your LFS partition is mounted on /mnt/LFS, using /dev/mmcblk0p11 <--- You MUST set this correctly!
 
 LFS=/mnt/LFS
-yversion=9.0
+yversion=1.0
 SOURCEARCHIVES=/ysarchives/$yversion
 PKGARCHIVES=/ybpackages/$yversion
 EXTFOLDER=
@@ -215,7 +215,7 @@ cd /yinstalBuildScripts/HelperScripts/
 #dialog program not yet installed so use:
 ./InstallService-NoDialog wpa
 
-#Don't forget to set up /etc/sysconfig/ifconfig.wifi0 if nessasary ( a default is created based on /ysarchives/9.0/SYSTEM/SystemData.local ).
+#Don't forget to set up /etc/sysconfig/ifconfig.wifi0 if nessasary ( a default is created based on /ysarchives/1.0/SYSTEM/SystemData.local ).
 #Disable eth0
 mv  /etc/sysconfig/ifconfig.eth0 /etc/sysconfig/XXifconfig.eth0XX
 

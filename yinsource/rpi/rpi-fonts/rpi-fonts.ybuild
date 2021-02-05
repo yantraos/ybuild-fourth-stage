@@ -14,13 +14,13 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "https://archive.raspberrypi.org/debian/pool/ui/f/fonts-piboto/fonts-piboto_1.2.tar.xz" ${SECTION}/rpi-fonts
-gettar "https://downloads.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.tar.bz2" ${SECTION}/rpi-fonts
-gettar "https://sources.archlinux.org/other/community/ttf-droid/ttf-droid-20121017.tar.xz" ${SECTION}/rpi-fonts
-gettar "https://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz" ${SECTION}/rpi-fonts
-gettar "http://archive.raspbian.org/raspbian/pool/main/f/fonts-lato/fonts-lato_2.0.orig.tar.xz" ${SECTION}/rpi-fonts
-gettar "http://archive.raspbian.org/raspbian/pool/main/f/fonts-noto/fonts-noto-mono_20181227-1_all.deb" ${SECTION}/rpi-fonts
-gettar "http://archive.raspbian.org/raspbian/pool/main/f/fonts-liberation/ttf-liberation_1.07.4-1_all.deb" ${SECTION}/rpi-fonts
+gettar "http://35.154.131.43/ysarchives/1.0/RPI/fonts-piboto_1.2.tar.xz" ${SECTION}/rpi-fonts
+gettar "http://35.154.131.43/ysarchives/1.0/RPI/dejavu-fonts-ttf-2.37.tar.bz2" ${SECTION}/rpi-fonts
+gettar "http://35.154.131.43/ysarchives/1.0/RPI/ttf-droid-20121017.tar.xz" ${SECTION}/rpi-fonts
+gettar "http://35.154.131.43/ysarchives/1.0/RPI/freefont-otf-20120503.tar.gz" ${SECTION}/rpi-fonts
+gettar "http://35.154.131.43/ysarchives/1.0/RPI/fonts-lato/fonts-lato_2.0.orig.tar.xz" ${SECTION}/rpi-fonts
+gettar "http://35.154.131.43/ysarchives/1.0/RPI/fonts-noto-mono_20181227-1_all.deb" ${SECTION}/rpi-fonts
+gettar "http://35.154.131.43/ysarchives/1.0/RPI/fonts-liberation/ttf-liberation_1.07.4-1_all.deb" ${SECTION}/rpi-fonts
 #gettar "http://archive.raspbian.org/raspbian/pool/main/f/fonts-liberation2/fonts-liberation2_2.00.5-2_all.deb" ${SECTION}/rpi-fonts
 
 rm -rf "$PKG" || true

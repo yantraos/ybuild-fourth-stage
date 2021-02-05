@@ -2,7 +2,7 @@
 
 . /usr/share/yinstal/yapi
 
-DEPENDS="NPAPI-SDK-0.27.2 OpenJDK-9.0.4"
+DEPENDS="NPAPI-SDK-0.27.2 OpenJDK-1.0.4"
 if ! yaps -B "$DEPENDS";then
 	exit 100
 fi
@@ -19,7 +19,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://icedtea.classpath.org/download/source/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

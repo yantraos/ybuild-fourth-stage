@@ -22,7 +22,7 @@ mkdir -p "$PKG"
 #gunzip < /proc/config.gz > ${KERNELCONFIG}
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/KERNEL/${TARBALL}" ${SECTION}
+gettar "http://35.154.131.43/ysarchives/1.0/KERNEL/${TARBALL}" ${SECTION}
 
 pushd "${KERNELSOURCEDIR}"
 	(mkdir "${TARNAME}-${VERSION}"||true;tar -C "${TARNAME}-${VERSION}" -xvf "${SOURCEARCHIVES}/${SECTION}/${TARBALL}" --strip-components=1)

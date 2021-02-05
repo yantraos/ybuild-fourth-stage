@@ -2,14 +2,14 @@
 
 . /usr/share/yinstal/yapi
 
-DEPENDS="liblxqt-git-0.9.0"
+DEPENDS="liblxqt-git-0.1.0"
 if ! yaps -B "$DEPENDS";then
 	exit 100
 fi
 
 PKGNAME="lxqt-notificationd-git"
 BASEPKGNAME="lxqt-notificationd"
-VERSION="0.9.0"
+VERSION="0.1.0"
 BUILD=${BUILD:-1}
 SECTION="LXQT"
 SUFFIX="YAPS"

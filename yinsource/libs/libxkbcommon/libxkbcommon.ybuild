@@ -2,7 +2,7 @@
 
 . /usr/share/yinstal/yapi
 
-DEPENDS="xorg-libs-9.0 xkeyboard-config-2.27"
+DEPENDS="xorg-libs-1.0 xkeyboard-config-2.27"
 if ! yaps -B "$DEPENDS";then
 	exit 100
 fi
@@ -20,7 +20,7 @@ CWD=$(pwd)
 OPTIONS=${OPTIONS:-""}
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/LIBS/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/LIBS/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

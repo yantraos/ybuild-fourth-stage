@@ -16,7 +16,7 @@ CWD=$(pwd)
 rm -rf "$PKG" || true
 mkdir -vp "${PKG}/lib${LIBDIRSUFFIX}"
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/KERNEL/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/KERNEL/${TARBALL}" $SECTION
 
 pushd "${PKG}"
 	NOCHANGEUSER=1 extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"

@@ -14,9 +14,9 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "https://github.com/maxmind/geoip-api-c/releases/download/v${VERSION}/${TARBALL}" $SECTION
-gettar "https://sourceforge.net/projects/slackbuildsdirectlinks/files/${PKGNAME}/20180310/${PKGNAME}.dat.gz" $SECTION
-gettar "https://sourceforge.net/projects/slackbuildsdirectlinks/files/${PKGNAME}/20180310/${PKGNAME}v6.dat.gz" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${PKGNAME}.dat.gz" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/NET/${PKGNAME}v6.dat.gz" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

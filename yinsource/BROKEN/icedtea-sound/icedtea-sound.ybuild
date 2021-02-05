@@ -4,7 +4,7 @@
 
 echo "Broken ..."
 exit 100
-DEPENDS="OpenJDK-9.0.4"
+DEPENDS="OpenJDK-1.0.4"
 if ! yaps -B "$DEPENDS";then
 	exit 100
 fi

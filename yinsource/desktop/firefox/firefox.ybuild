@@ -21,7 +21,7 @@ CWD=$(pwd)
 MOZCONFIGFILE="$CWD/mozconfig.firefox"
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/DESKTOP/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/DESKTOP/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

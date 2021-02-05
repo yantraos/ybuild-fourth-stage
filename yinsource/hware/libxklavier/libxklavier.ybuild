@@ -2,7 +2,7 @@
 
 . /usr/share/yinstal/yapi
 
-DEPENDS="GLib-2.60.6 iso-codes-4.3 libxml2-2.9.9 xorg-libs-9.0"
+DEPENDS="GLib-2.60.6 iso-codes-4.3 libxml2-2.9.9 xorg-libs-1.0"
 if ! yaps -B "$DEPENDS";then
 	exit 100
 fi
@@ -19,7 +19,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://35.154.131.43/ysarchives/9.0/HWARE/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/HWARE/${TARBALL}" $SECTION
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

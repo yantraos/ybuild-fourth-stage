@@ -20,7 +20,7 @@ CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
 
-gettar "https://github.com/qt/qtwebkit/archive/v${VERSION}-alpha3.tar.gz" $SECTION ${TARBALL}
+gettar "http://35.154.131.43/ysarchives/1.0/QT/v${VERSION}-alpha3.tar.gz" $SECTION ${TARBALL}
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

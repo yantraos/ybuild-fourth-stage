@@ -19,7 +19,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "https://download.qt.io/archive/qt/${VERSION%.?*}/${VERSION}/submodules/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/QT/${TARBALL}" $SECTION
 
 #possible fix for SOME setups use with discrection
 #gettar "http://www.linuxfromscratch.org/patches/blfs/$yversion/${PKGNAME}-${VERSION}-background_rendering_fix-1.patch" $SECTION

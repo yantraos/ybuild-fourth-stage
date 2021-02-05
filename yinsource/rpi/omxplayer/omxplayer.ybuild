@@ -19,7 +19,7 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "https://github.com/popcornmix/omxplayer/archive/master.zip" $SECTION ${TARBALL}
+gettar "http://35.154.131.43/ysarchives/1.0/RPI/master.zip" $SECTION ${TARBALL}
 rm -rf "$PKG" || true
 mkdir -p "$PKG"
 

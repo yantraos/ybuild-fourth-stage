@@ -19,8 +19,8 @@ DOWHAT=${1:-"build"}
 CWD=$(pwd)
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "http://sourceforge.net/projects/rejoystick/files/${PKGNAME}/${PKGNAME}-${VERSION}/${TARBALL}" $SECTION
-gettar "http://slackbuilds.org/slackbuilds/14.2/games/$PKGNAME/${PKGNAME}.patch" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/GAMES/${TARBALL}" $SECTION
+gettar "http://35.154.131.43/ysarchives/1.0/GAMES/${PKGNAME}.patch" $SECTION
 
 rm -rf "$PKG" || true
 mkdir -p "$PKG"

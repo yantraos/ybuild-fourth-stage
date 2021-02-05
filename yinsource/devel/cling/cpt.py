@@ -835,7 +835,7 @@ Section: devel
 Priority: optional
 Maintainer: Cling Developer Team <cling-dev@cern.ch>
 Uploaders: %s
-Build-Depends: debhelper (>= 9.0.0)
+Build-Depends: debhelper (>= 1.0.0)
 Standards-Version: 3.9.5
 Homepage: http://cling.web.cern.ch/
 Vcs-Git: http://root.cern.ch/git/cling.git

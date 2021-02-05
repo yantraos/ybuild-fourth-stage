@@ -21,7 +21,7 @@ CODENAME="Leia"
 FOLDER="visualization.waveform"
 
 scriptLog "${PKGNAME}-${VERSION}"
-gettar "https://github.com/xbmc/visualization.waveform/archive/${TARBALL}" $SECTION "${PKGNAME}-${VERSION}"
+gettar "http://35.154.131.43/ysarchives/1.0/RPI/${TARBALL}" $SECTION "${PKGNAME}-${VERSION}"
 
 rm -rf "$PKG" || true
 mkdir -p "$PKG"

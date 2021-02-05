@@ -2,14 +2,14 @@
 
 . /usr/share/yinstal/yapi
 
-DEPENDS="lxqt-session-git-0.9.0"
+DEPENDS="lxqt-session-git-0.1.0"
 if ! yaps -B "$DEPENDS";then
 	exit 100
 fi
 
 PKGNAME="lxqt-common-git"
 BASEPKGNAME="lxqt-common"
-VERSION="0.9.0"
+VERSION="0.1.0"
 BUILD=${BUILD:-1}
 SECTION="LXQT"
 SUFFIX="YAPS"

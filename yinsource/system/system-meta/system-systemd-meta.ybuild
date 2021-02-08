@@ -57,7 +57,7 @@ Libelf-0.177
 Libffi-3.2.1
 OpenSSL-1.1.1
 python3-3.7.4
-Ninja-1.1.0
+Ninja-1.9.0
 Meson-0.51.1
 Coreutils-8.31
 Check-0.12.0

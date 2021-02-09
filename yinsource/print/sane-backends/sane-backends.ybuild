@@ -26,7 +26,7 @@ mkdir -p "$PKG"
 pushd $COMPILEAT 2>/dev/null||true
 	extractarchive "${SOURCEARCHIVES}/${SECTION}/${TARBALL}"
 	pushd "${TARNAME}-${VERSION}"
-	       # groupadd -g 70 scanner
+	       groupadd -g 70 scanner||true
                 
 		CFLAGS="$yflags" CXXFLAGS="$yflags" ./configure --prefix=/usr  --with-docdir=/usr/share/doc/${PKGNAME}-${VERSION} --with-group=scanner --enable-libusb_1_0
 		make $MAKEFLAGS||make|| exit 100

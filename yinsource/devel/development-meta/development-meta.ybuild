@@ -6,7 +6,7 @@
 
 DEPENDS="abs-guide-10
 bazaar-2.7.0
-ctags-5.8
+ctags-9.0
 libglade-2.6.4
 Ruby-2.5.0
 Subversion-1.12.2

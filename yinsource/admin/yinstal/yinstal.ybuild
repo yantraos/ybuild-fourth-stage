@@ -6,7 +6,7 @@ VERSION="0.4.23"
 BUILD=${BUILD:-1}
 SECTION="ADMIN"
 SUFFIX="YAPS"
-TARBALL="${TARNAME}-${VERSION}.zip"
+TARBALL="${TARNAME}-master.zip"
 HELPER=finddepends
 HELPERCODE=main.cpp
 FUNCTIONS=yapi
@@ -35,7 +35,7 @@ if [ "X$BOOTSTRAP" != "X" ];then
 else
 
 	rm -r "${TARNAME}-master"||true
-	wget -c --no-check-certificate "http://35.154.131.43/ysarchives/1.0/ADMIN/yantra-master.zip" -O $TARBALL||true
+	wget -c --no-check-certificate "http://35.154.131.43/ysarchives/1.0/ADMIN/yinstal-master.zip" -O $TARBALL||true
 
 	unzip "$TARBALL"
 	pushd "${TARNAME}-master"
